@@ -5,6 +5,7 @@ import {
   Github, Linkedin, Mail, Smartphone, Globe, Database,
   Zap, Layers, Shield, ChevronRight, Command, Cpu
 } from 'lucide-react';
+import ProgrammingImg from '../context/Programming.jpg';
 
 export default function Home() {
   return (
@@ -34,82 +35,38 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-500/20 rounded-[100%] blur-[120px] -z-10 opacity-50" />
-        
-        <div className="max-w-[1200px] mx-auto text-center">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={ProgrammingImg} 
+            alt="Background" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-[#08090A]" />
+        </div>
+
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 text-center pt-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-medium tracking-[-0.02em] leading-[1.1] mb-8 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-medium tracking-[-0.02em] leading-[1.1] mb-8 pb-4 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl">
               DevStudio can take your ideas
               and bring them to life
             </h1>
             
-            <p className="text-lg md:text-xl text-[#8A8F98] mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
               From concept to deployment, we build high-performance mobile and web applications
               tailored to scale with your business needs.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="#demos" className="h-12 px-8 rounded-full bg-[#F2F2F3] text-black font-medium hover:bg-white/90 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2">
+              <a href="#demos" className="h-12 px-8 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2">
                 Try demos
                 <ChevronRight className="w-4 h-4 opacity-50" />
               </a>
-            </div>
-          </motion.div>
-
-          {/* Abstract Interface Visualization */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40, rotateX: 20 }}
-            animate={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mt-20 relative mx-auto max-w-5xl perspective-1000"
-            style={{ perspective: '1000px' }}
-          >
-            <div className="relative rounded-xl border border-white/[0.08] bg-[#0F1115] shadow-2xl overflow-hidden aspect-[16/9] group">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-              
-              {/* Mock UI Header */}
-              <div className="h-12 border-b border-white/[0.08] flex items-center px-4 gap-4">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#FF5F57] opacity-50" />
-                  <div className="w-3 h-3 rounded-full bg-[#FEBC2E] opacity-50" />
-                  <div className="w-3 h-3 rounded-full bg-[#28C840] opacity-50" />
-                </div>
-                <div className="h-6 w-64 bg-white/[0.05] rounded-md" />
-              </div>
-
-              {/* Mock UI Content */}
-              <div className="p-8 grid grid-cols-12 gap-8 h-full">
-                {/* Sidebar */}
-                <div className="col-span-3 space-y-4">
-                  <div className="h-4 w-24 bg-white/[0.1] rounded mb-8" />
-                  {[1,2,3,4,5].map(i => (
-                    <div key={i} className="h-3 w-full bg-white/[0.03] rounded" />
-                  ))}
-                </div>
-                {/* Main Area */}
-                <div className="col-span-9">
-                  <div className="flex justify-between mb-8">
-                    <div className="h-8 w-48 bg-white/[0.1] rounded" />
-                    <div className="h-8 w-24 bg-[#5E6AD2]/20 rounded border border-[#5E6AD2]/30" />
-                  </div>
-                  <div className="space-y-4">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="h-24 w-full rounded-lg border border-white/[0.05] bg-white/[0.02] p-4 flex gap-4 items-start group-hover:border-white/[0.1] transition-colors">
-                        <div className="w-4 h-4 rounded-full border border-white/20 mt-1" />
-                        <div className="flex-1">
-                          <div className="h-4 w-3/4 bg-white/[0.08] rounded mb-2" />
-                          <div className="h-3 w-1/2 bg-white/[0.04] rounded" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>
@@ -197,75 +154,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features / Process Section */}
-      <section id="method" className="py-32 px-6 border-t border-white/[0.05]">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="grid md:grid-cols-2 gap-20 items-center">
-            <div>
-              <div className="text-[#5E6AD2] text-sm font-medium mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#5E6AD2]" />
-                Project and long-term planning
-              </div>
-              <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-6">Set the product <br /> direction</h2>
-              <p className="text-xl text-[#8A8F98] leading-relaxed mb-8">
-                Align your team around a unified product timeline. Plan, manage, and track all product initiatives with visual planning tools.
-              </p>
-              
-              <div className="space-y-6">
-                {[
-                  { title: "Manage projects end-to-end", desc: "Consolidate specs, milestones, and tasks." },
-                  { title: "Project updates", desc: "Communicate progress and project health." },
-                  { title: "Collaborative documents", desc: "Write down product ideas and work together." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4 group cursor-pointer">
-                    <div className="w-1 h-full bg-white/[0.1] group-hover:bg-[#5E6AD2] transition-colors rounded-full" />
-                    <div>
-                      <h4 className="text-lg font-medium mb-1 group-hover:text-[#5E6AD2] transition-colors">{item.title}</h4>
-                      <p className="text-[#8A8F98] text-sm">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Abstract Timeline Visualization */}
-            <div className="relative h-[600px] bg-[#0F1115] rounded-3xl border border-white/[0.08] overflow-hidden p-8">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#5E6AD2]/10 via-transparent to-transparent" />
-              
-              {/* Timeline Graphic */}
-              <div className="relative h-full flex flex-col justify-center">
-                <div className="flex justify-between text-xs text-[#8A8F98] mb-4 font-mono uppercase tracking-widest">
-                  <span>Aug 22</span>
-                  <span>Sep</span>
-                  <span>Oct</span>
-                </div>
-                
-                {/* Timeline Lines */}
-                <div className="relative h-64 border-l border-white/[0.1] ml-4 space-y-8">
-                  {[
-                    { label: "Realtime inference", tag: "Beta", color: "bg-blue-500" },
-                    { label: "RLHF fine tuning", tag: "In Progress", color: "bg-purple-500" },
-                    { label: "Mobile App V2", tag: "Planning", color: "bg-green-500" }
-                  ].map((item, i) => (
-                    <div key={i} className="relative ml-8 group">
-                      <div className="absolute -left-[37px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#0F1115] border-2 border-white/[0.2] group-hover:border-[#5E6AD2] transition-colors" />
-                      <div className="bg-white/[0.03] border border-white/[0.08] p-4 rounded-lg w-full max-w-xs hover:bg-white/[0.05] transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">{item.label}</span>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] text-white/60`}>{item.tag}</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-white/[0.05] rounded-full overflow-hidden">
-                          <div className={`h-full w-2/3 ${item.color} opacity-50`} />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Grid Features */}
       <section className="py-32 px-6 border-t border-white/[0.05]">
@@ -273,19 +162,19 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
+                icon: <Code2 className="w-6 h-6 text-purple-400" />,
+                title: "Custom Development",
+                desc: "Tailored web applications built with modern technologies like React, TypeScript, and Node.js to meet your specific needs."
+              },
+              {
+                icon: <Smartphone className="w-6 h-6 text-blue-400" />,
+                title: "Responsive Design",
+                desc: "Fluid and adaptive layouts that provide an optimal viewing experience across a wide range of devices, from mobile phones to desktop monitors."
+              },
+              {
                 icon: <Zap className="w-6 h-6 text-yellow-400" />,
-                title: "Build momentum",
-                desc: "Create healthy routines and focus your team on what work should happen next."
-              },
-              {
-                icon: <Layers className="w-6 h-6 text-blue-400" />,
-                title: "Manage incoming work",
-                desc: "Review and assign incoming bug reports, feature requests, and other unplanned work."
-              },
-              {
-                icon: <Shield className="w-6 h-6 text-green-400" />,
-                title: "Linear Insights",
-                desc: "Take the guesswork out of product planning with realtime, actionable data analytics."
+                title: "Performance Optimization",
+                desc: "Fast-loading, SEO-friendly websites optimized for speed and user experience, ensuring your visitors stay engaged."
               }
             ].map((feature, i) => (
               <div key={i} className="p-8 rounded-3xl bg-[#0F1115] border border-white/[0.08] hover:bg-white/[0.02] transition-colors group">

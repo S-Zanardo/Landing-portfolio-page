@@ -1,22 +1,227 @@
-import { motion } from 'framer-motion';
-import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Restaurant() {
+  const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [partySize, setPartySize] = useState(2);
+  const [bookingStep, setBookingStep] = useState<'select' | 'confirm' | 'success'>('select');
+
+  // Generate next 7 days
+  const dates = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    return date;
+  });
+
+  // Generate time slots (11am to 10pm)
+  const timeSlots = [
+    "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM",
+    "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM",
+    "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"
+  ];
+
+  const handleBook = () => {
+    setBookingStep('success');
+    setTimeout(() => {
+      setIsReservationOpen(false);
+      setBookingStep('select');
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setEmail('');
+    }, 3000);
+  };
+
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-[#2C1810] font-serif">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-[#FDF8F5]/90 backdrop-blur-md border-b border-[#E6D5CC]">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-sm font-sans font-medium text-orange-800 hover:text-orange-600 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Portfolio
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between relative">
+          <Link to="/" className="flex items-center gap-2 text-sm font-sans font-medium text-orange-800 hover:text-orange-600 transition-colors z-10">
+            <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Portfolio</span>
           </Link>
-          <span className="text-2xl font-bold italic tracking-wider">Trattoria Bella</span>
-          <button className="bg-[#D94E1F] text-white px-6 py-2 rounded-full font-sans text-sm font-medium hover:bg-[#B53E16] transition-colors">
+          <div className="absolute inset-x-0 h-full flex items-center justify-center pointer-events-none px-28 sm:px-0">
+            <span className="text-xl md:text-2xl font-bold italic tracking-wider text-center leading-tight">Trattoria Bella</span>
+          </div>
+          <button 
+            onClick={() => setIsReservationOpen(true)}
+            className="bg-[#D94E1F] text-white px-4 md:px-6 py-2 rounded-full font-sans text-sm font-medium hover:bg-[#B53E16] transition-colors z-10"
+          >
             Book Table
           </button>
         </div>
       </nav>
+
+      {/* Reservation Modal */}
+      <AnimatePresence>
+        {isReservationOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsReservationOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="bg-[#2C1810] text-white p-6 flex justify-between items-center">
+                <div>
+                  <h3 className="text-2xl font-serif italic">Reserve a Table</h3>
+                  <p className="text-white/60 text-sm font-sans">Trattoria Bella</p>
+                </div>
+                <button 
+                  onClick={() => setIsReservationOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {bookingStep === 'success' ? (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Check className="w-10 h-10" />
+                    </div>
+                    <h4 className="text-2xl font-bold mb-2">Reservation Confirmed!</h4>
+                    <p className="text-gray-600 font-sans">
+                      We look forward to seeing you on {selectedDate?.toLocaleDateString()} at {selectedTime}.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-8">
+                    {/* Party Size */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-sans font-bold text-gray-500 uppercase tracking-wider mb-4">
+                        <Users className="w-4 h-4" /> Party Size
+                      </label>
+                      <div className="flex gap-3 overflow-x-auto p-4">
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setPartySize(size)}
+                            className={`w-12 h-12 rounded-full font-sans font-bold flex items-center justify-center transition-all ${
+                              partySize === size 
+                                ? 'bg-[#D94E1F] text-white shadow-lg scale-110' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Date Selection */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-sans font-bold text-gray-500 uppercase tracking-wider mb-4">
+                        <Calendar className="w-4 h-4" /> Select Date
+                      </label>
+                      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                        {dates.map((date, i) => {
+                          const isSelected = selectedDate?.toDateString() === date.toDateString();
+                          const isToday = i === 0;
+                          
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => setSelectedDate(date)}
+                              className={`flex-shrink-0 w-20 p-3 rounded-2xl border transition-all flex flex-col items-center gap-1 ${
+                                isSelected
+                                  ? 'border-[#D94E1F] bg-[#D94E1F]/5 ring-2 ring-[#D94E1F]/20'
+                                  : 'border-gray-200 hover:border-[#D94E1F]/50'
+                              }`}
+                            >
+                              <span className={`text-xs font-sans font-bold uppercase ${isSelected ? 'text-[#D94E1F]' : 'text-gray-400'}`}>
+                                {isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' })}
+                              </span>
+                              <span className={`text-xl font-bold ${isSelected ? 'text-[#D94E1F]' : 'text-gray-900'}`}>
+                                {date.getDate()}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Time Selection */}
+                    <div className={!selectedDate ? 'opacity-50 pointer-events-none' : ''}>
+                      <label className="flex items-center gap-2 text-sm font-sans font-bold text-gray-500 uppercase tracking-wider mb-4">
+                        <Clock className="w-4 h-4" /> Select Time
+                      </label>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                        {timeSlots.map((time) => (
+                          <button
+                            key={time}
+                            onClick={() => setSelectedTime(time)}
+                            className={`py-2 px-3 rounded-lg text-sm font-sans font-medium transition-all ${
+                              selectedTime === time
+                                ? 'bg-[#2C1810] text-white shadow-md'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {time}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Email Input */}
+                    <div className={!selectedTime ? 'opacity-50 pointer-events-none' : ''}>
+                      <label className="flex items-center gap-2 text-sm font-sans font-bold text-gray-500 uppercase tracking-wider mb-4">
+                        <Mail className="w-4 h-4" /> Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="w-full p-4 rounded-xl border border-gray-200 font-sans focus:outline-none focus:border-[#D94E1F] focus:ring-1 focus:ring-[#D94E1F] transition-all"
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              {bookingStep !== 'success' && (
+                <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                  <div className="text-sm font-sans">
+                    {selectedDate && selectedTime ? (
+                      <span className="text-[#2C1810] font-medium">
+                        {selectedDate.toLocaleDateString()} at {selectedTime}
+                        <br />
+                        <span className="text-gray-500">{partySize} Guests</span>
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">Select date & time</span>
+                    )}
+                  </div>
+                  <button
+                    disabled={!selectedDate || !selectedTime || !email}
+                    onClick={handleBook}
+                    className="bg-[#D94E1F] text-white px-8 py-3 rounded-full font-sans font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#B53E16] transition-colors shadow-lg shadow-orange-900/20"
+                  >
+                    Confirm Booking
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Hero */}
       <header className="relative h-[80vh] flex items-center justify-center overflow-hidden">
@@ -40,9 +245,9 @@ export default function Restaurant() {
             <p className="text-xl md:text-2xl font-light max-w-2xl mx-auto mb-10 text-white/90">
               Handmade pasta, wood-fired pizza, and the finest wines in the heart of the city.
             </p>
-            <button className="bg-white text-[#2C1810] px-8 py-4 rounded-full font-sans font-semibold hover:bg-orange-50 transition-colors">
+            <Link to="/demo/restaurant/menu" className="bg-white text-[#2C1810] px-8 py-4 rounded-full font-sans font-semibold hover:bg-orange-50 transition-colors inline-block">
               View Our Menu
-            </button>
+            </Link>
           </motion.div>
         </div>
       </header>

@@ -1,8 +1,11 @@
-import { motion } from 'framer-motion';
-import { ArrowLeft, Camera, Instagram, Mail, Twitter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Camera, Instagram, Mail, Twitter, Menu, X, Linkedin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Photographer() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const images = [
     "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000",
     "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1000",
@@ -17,17 +20,45 @@ export default function Photographer() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-sm">
         <div className="max-w-[1800px] mx-auto px-6 h-24 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-xs font-medium tracking-widest uppercase hover:opacity-50 transition-opacity">
+          <Link to="/" className="flex items-center gap-2 text-xs font-medium tracking-widest uppercase hover:opacity-50 transition-opacity z-50">
             <ArrowLeft className="w-3 h-3" /> Portfolio
           </Link>
-          <span className="text-xl font-bold tracking-[0.2em] uppercase">Elena Vance</span>
-          <div className="flex gap-6 text-xs font-medium tracking-widest uppercase">
+          
+          {/* Desktop Name */}
+          <span className="hidden md:block text-xl font-bold tracking-[0.2em] uppercase">Elena Vance</span>
+          
+          {/* Desktop Menu */}
+          <div className="hidden md:flex gap-6 text-xs font-medium tracking-widest uppercase">
             <a href="#" className="hover:opacity-50 transition-opacity">Work</a>
             <a href="#" className="hover:opacity-50 transition-opacity">About</a>
             <a href="#" className="hover:opacity-50 transition-opacity">Contact</a>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden z-50 p-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-white flex flex-col items-center justify-center gap-8 text-2xl font-light tracking-widest uppercase md:hidden"
+          >
+            <a href="#" onClick={() => setIsMenuOpen(false)}>Work</a>
+            <a href="#" onClick={() => setIsMenuOpen(false)}>About</a>
+            <a href="#" onClick={() => setIsMenuOpen(false)}>Contact</a>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero */}
       <div className="pt-40 pb-20 px-6 max-w-[1800px] mx-auto">
@@ -71,19 +102,25 @@ export default function Photographer() {
       {/* Footer */}
       <footer className="py-20 px-6 border-t border-gray-100">
         <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-          <div>
+          <div className="w-full">
             <h3 className="text-2xl font-light mb-6">Let's work together</h3>
-            <a href="mailto:hello@elenavance.com" className="text-4xl underline decoration-1 underline-offset-8 hover:text-gray-600 transition-colors">
+            <div className="mb-4 md:hidden">
+              <span className="text-xl font-bold tracking-[0.2em] uppercase block mb-2">Elena Vance</span>
+            </div>
+            <a href="mailto:hello@elenavance.com" className="text-xl sm:text-2xl md:text-4xl underline decoration-1 underline-offset-8 hover:text-gray-600 transition-colors break-all sm:break-normal">
               hello@elenavance.com
             </a>
           </div>
           
-          <div className="flex gap-8">
+          <div className="flex gap-8 w-full justify-center md:w-auto md:justify-start">
             <a href="#" className="w-12 h-12 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-colors">
               <Instagram className="w-5 h-5" />
             </a>
             <a href="#" className="w-12 h-12 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-colors">
               <Twitter className="w-5 h-5" />
+            </a>
+            <a href="#" className="w-12 h-12 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+              <Linkedin className="w-5 h-5" />
             </a>
             <a href="#" className="w-12 h-12 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-colors">
               <Mail className="w-5 h-5" />

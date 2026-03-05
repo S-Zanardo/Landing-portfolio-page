@@ -1,8 +1,35 @@
-import { motion } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { comics } from '../../data/comics';
+import { useComicCart } from '../../context/ComicCartContext';
 
 export default function ComicStore() {
+  const [email, setEmail] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const { cartCount } = useComicCart();
+
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
+  const handleSubscribe = () => {
+    if (validateEmail(email)) {
+      setIsError(false);
+      setShowModal(true);
+      setEmail('');
+    } else {
+      setIsError(true);
+      setShowModal(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white font-sans overflow-x-hidden">
       {/* Top Bar */}
@@ -31,11 +58,14 @@ export default function ComicStore() {
           </div>
 
           <div className="flex items-center gap-6">
-            <Search className="w-6 h-6 cursor-pointer hover:text-[#FFE600]" />
-            <div className="relative cursor-pointer group">
+            <Link to="/demo/comic-store/cart" className="relative cursor-pointer group">
               <ShoppingCart className="w-6 h-6 group-hover:text-[#FFE600]" />
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#FF0055] rounded-full flex items-center justify-center text-xs font-bold">2</span>
-            </div>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#FF0055] rounded-full flex items-center justify-center text-xs font-bold">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </nav>
@@ -61,9 +91,11 @@ export default function ComicStore() {
             <p className="text-xl text-gray-300 mb-8 max-w-lg">
               The web-slinger returns in an all-new series that will change the Marvel universe forever!
             </p>
-            <button className="bg-[#FFE600] text-black font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <span className="block skew-x-[10deg]">Shop Now</span>
-            </button>
+            <Link to="/demo/comic-store/search">
+              <button className="bg-[#FFE600] text-black font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <span className="block skew-x-[10deg]">Shop Now</span>
+              </button>
+            </Link>
           </div>
           
           <motion.img 
@@ -86,55 +118,35 @@ export default function ComicStore() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                title: "Batman #125",
-                price: "$4.99",
-                image: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80&w=800"
-              },
-              {
-                title: "X-Men Red #3",
-                price: "$3.99",
-                image: "https://images.unsplash.com/photo-1608889175123-8ee362201f81?auto=format&fit=crop&q=80&w=800"
-              },
-              {
-                title: "Saga Vol. 10",
-                price: "$16.99",
-                image: "https://images.unsplash.com/photo-1560579183-c61e6e6305b6?auto=format&fit=crop&q=80&w=800"
-              },
-              {
-                title: "One Piece Vol. 100",
-                price: "$9.99",
-                image: "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&q=80&w=800"
-              }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="group cursor-pointer"
-              >
-                <div className="relative aspect-[2/3] mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2 bg-[#FF0055] text-white text-xs font-bold px-2 py-1 rounded">
-                    NEW
+            {comics.map((item, i) => (
+              <Link to={`/demo/comic-store/product/${item.id}`} key={item.id}>
+                <motion.div
+                  whileHover={{ y: -10 }}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative aspect-[2/3] mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
+                    <img 
+                      src={item.image} 
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-[#FF0055] text-white text-xs font-bold px-2 py-1 rounded">
+                      NEW
+                    </div>
                   </div>
-                </div>
-                <h3 className="font-bold text-lg mb-1 group-hover:text-[#FFE600] transition-colors">{item.title}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400">{item.price}</span>
-                  <div className="flex text-[#FFE600]">
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
+                  <h3 className="font-bold text-lg mb-1 group-hover:text-[#FFE600] transition-colors">{item.title}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">{item.price}</span>
+                    <div className="flex text-[#FFE600]">
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
@@ -148,13 +160,18 @@ export default function ComicStore() {
           <p className="text-xl font-bold mb-8 max-w-xl mx-auto">
             Get the latest updates on new releases, exclusive events, and member-only discounts.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto relative z-20">
             <input 
               type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email" 
-              className="flex-1 px-6 py-4 bg-white border-4 border-black font-bold placeholder:text-gray-500 focus:outline-none focus:border-[#FF0055]"
+              className="flex-1 px-6 py-4 bg-white border-4 border-black font-bold text-black placeholder:text-gray-500 focus:outline-none focus:border-[#FF0055]"
             />
-            <button className="bg-black text-white font-black uppercase px-8 py-4 hover:bg-[#FF0055] transition-colors border-4 border-black">
+            <button 
+              onClick={handleSubscribe}
+              className="bg-black text-white font-black uppercase px-8 py-4 hover:bg-[#FF0055] transition-colors border-4 border-black"
+            >
               Subscribe
             </button>
           </div>
@@ -166,6 +183,48 @@ export default function ComicStore() {
           <div className="absolute bottom-10 right-10 w-48 h-48 bg-black rotate-45" />
         </div>
       </section>
+
+      {/* Subscription Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
+              animate={{ scale: 1, opacity: 1, rotate: 0 }}
+              exit={{ scale: 0.5, opacity: 0, rotate: 10 }}
+              className={`relative bg-white border-4 border-black p-8 max-w-md w-full text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${isError ? 'border-[#FF0055]' : 'border-[#FFE600]'}`}
+            >
+              <button 
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 hover:scale-110 transition-transform"
+              >
+                <X className="w-6 h-6 text-black" />
+              </button>
+              
+              {isError ? (
+                <>
+                  <div className="text-6xl mb-4">💥</div>
+                  <h3 className="font-comic text-3xl text-black mb-2 uppercase">Oops!</h3>
+                  <p className="text-black font-bold text-lg">Please enter a valid email address to join the squad!</p>
+                </>
+              ) : (
+                <>
+                  <div className="text-6xl mb-4">🎉</div>
+                  <h3 className="font-comic text-3xl text-black mb-2 uppercase">BOOM! You're In!</h3>
+                  <p className="text-black font-bold text-lg">Thanks for subscribing! Get ready for some epic updates.</p>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
