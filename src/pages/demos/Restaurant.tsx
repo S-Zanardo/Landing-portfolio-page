@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -49,9 +49,10 @@ export default function Restaurant() {
           </div>
           <button 
             onClick={() => setIsReservationOpen(true)}
-            className="bg-[#D94E1F] text-white px-4 md:px-6 py-2 rounded-full font-sans text-sm font-medium hover:bg-[#B53E16] transition-colors z-10"
+            className="bg-[#D94E1F] text-white p-3 rounded-full hover:bg-[#B53E16] transition-colors z-10 flex items-center justify-center"
+            title="Book Table"
           >
-            Book Table
+            <BookOpen className="w-5 h-5" />
           </button>
         </div>
       </nav>

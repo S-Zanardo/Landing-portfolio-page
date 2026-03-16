@@ -25,22 +25,26 @@ function ScrollToTop() {
   return null;
 }
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <ComicCartProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/demo/restaurant" element={<Restaurant />} />
-          <Route path="/demo/restaurant/menu" element={<RestaurantMenu />} />
-          <Route path="/demo/photographer" element={<Photographer />} />
-          <Route path="/demo/comic-store" element={<ComicStore />} />
-          <Route path="/demo/comic-store/product/:id" element={<ComicProduct />} />
-          <Route path="/demo/comic-store/cart" element={<ComicCart />} />
-          <Route path="/demo/comic-store/search" element={<ComicSearch />} />
-        </Routes>
-      </ComicCartProvider>
+      <LanguageProvider>
+        <ComicCartProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/demo/restaurant" element={<Restaurant />} />
+            <Route path="/demo/restaurant/menu" element={<RestaurantMenu />} />
+            <Route path="/demo/photographer" element={<Photographer />} />
+            <Route path="/demo/comic-store" element={<ComicStore />} />
+            <Route path="/demo/comic-store/product/:id" element={<ComicProduct />} />
+            <Route path="/demo/comic-store/cart" element={<ComicCart />} />
+            <Route path="/demo/comic-store/search" element={<ComicSearch />} />
+          </Routes>
+        </ComicCartProvider>
+      </LanguageProvider>
     </Router>
   );
 }

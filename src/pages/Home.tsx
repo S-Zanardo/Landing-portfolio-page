@@ -7,7 +7,15 @@ import {
 } from 'lucide-react';
 import ProgrammingImg from '../context/Programming.jpg';
 
+import { useLanguage } from '../context/LanguageContext';
+
 export default function Home() {
+  const { t, language, setLanguage } = useLanguage();
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'it' : 'en');
+  };
+
   return (
     <div className="min-h-screen bg-[#08090A] text-[#F2F2F3] font-sans selection:bg-[#5E6AD2] selection:text-white overflow-x-hidden">
       
@@ -18,17 +26,24 @@ export default function Home() {
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
               <Code2 className="w-4 h-4 text-white" />
             </div>
-            <span className="text-sm font-semibold tracking-tight">DevStudio</span>
+            <span className="text-sm font-semibold tracking-tight">Zanardo DEV</span>
           </div>
           
           <div className="flex items-center gap-4">
+            <button
+              onClick={toggleLanguage}
+              className="w-10 h-10 rounded-full bg-[#F2F2F3] text-black flex items-center justify-center hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] text-xl"
+              title={language === 'en' ? "Switch to Italian" : "Passa all'inglese"}
+            >
+              {language === 'en' ? '🇮🇹' : '🇺🇸'}
+            </button>
             <a 
               href="https://www.fiverr.com/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-[#F2F2F3] text-black px-4 py-2 rounded-full text-[13px] font-medium hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+              className="bg-[#F2F2F3] text-black px-4 py-2 rounded-full text-[13px] font-medium hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] text-center flex items-center justify-center"
             >
-              Hire me on Fiverr
+              {t('hireMe')}
             </a>
           </div>
         </div>
@@ -53,18 +68,16 @@ export default function Home() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <h1 className="text-5xl md:text-7xl lg:text-[80px] font-medium tracking-[-0.02em] leading-[1.1] mb-8 pb-4 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl">
-              DevStudio can take your ideas
-              and bring them to life
+              {t('heroTitle')}
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
-              From concept to deployment, we build high-performance mobile and web applications
-              tailored to scale with your business needs.
+              {t('heroSubtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a href="#demos" className="h-12 px-8 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2">
-                Try demos
+                {t('tryDemos')}
                 <ChevronRight className="w-4 h-4 opacity-50" />
               </a>
             </div>
@@ -78,9 +91,9 @@ export default function Home() {
       <section id="demos" className="py-32 px-6">
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-20">
-            <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-6">Made for modern <br /> product teams</h2>
+            <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-6">{t('madeFor')}</h2>
             <p className="text-xl text-[#8A8F98] max-w-2xl">
-              DevStudio is shaped by the practices and principles that distinguish world-class product teams.
+              {t('madeForDesc')}
             </p>
           </div>
 
@@ -97,9 +110,9 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center mb-4 backdrop-blur-md">
                   <Utensils className="w-5 h-5 text-orange-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">Purpose-built for <br /> hospitality</h3>
+                <h3 className="text-xl font-medium mb-2">{t('restaurantTitle')}</h3>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">Restaurant Demo</span>
+                  <span className="text-sm text-white/60">{t('restaurantSubtitle')}</span>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -119,9 +132,9 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-4 backdrop-blur-md">
                   <Camera className="w-5 h-5 text-blue-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">Designed to move <br /> fast</h3>
+                <h3 className="text-xl font-medium mb-2">{t('photographerTitle')}</h3>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">Portfolio Demo</span>
+                  <span className="text-sm text-white/60">{t('photographerSubtitle')}</span>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -141,9 +154,9 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center mb-4 backdrop-blur-md">
                   <ShoppingBag className="w-5 h-5 text-yellow-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">Crafted to <br /> perfection</h3>
+                <h3 className="text-xl font-medium mb-2">{t('comicStoreTitle')}</h3>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">E-commerce Demo</span>
+                  <span className="text-sm text-white/60">{t('comicStoreSubtitle')}</span>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -163,18 +176,18 @@ export default function Home() {
             {[
               {
                 icon: <Code2 className="w-6 h-6 text-purple-400" />,
-                title: "Custom Development",
-                desc: "Tailored web applications built with modern technologies like React, TypeScript, and Node.js to meet your specific needs."
+                title: t('customDevTitle'),
+                desc: t('customDevDesc')
               },
               {
                 icon: <Smartphone className="w-6 h-6 text-blue-400" />,
-                title: "Responsive Design",
-                desc: "Fluid and adaptive layouts that provide an optimal viewing experience across a wide range of devices, from mobile phones to desktop monitors."
+                title: t('responsiveDesignTitle'),
+                desc: t('responsiveDesignDesc')
               },
               {
                 icon: <Zap className="w-6 h-6 text-yellow-400" />,
-                title: "Performance Optimization",
-                desc: "Fast-loading, SEO-friendly websites optimized for speed and user experience, ensuring your visitors stay engaged."
+                title: t('perfOptTitle'),
+                desc: t('perfOptDesc')
               }
             ].map((feature, i) => (
               <div key={i} className="p-8 rounded-3xl bg-[#0F1115] border border-white/[0.08] hover:bg-white/[0.02] transition-colors group">
@@ -198,40 +211,68 @@ export default function Home() {
                 <div className="w-6 h-6 rounded bg-white/10 flex items-center justify-center">
                   <Code2 className="w-3 h-3 text-white" />
                 </div>
-                <span className="text-sm font-semibold">DevStudio</span>
+                <span className="text-sm font-semibold">Zanardo DEV</span>
               </div>
               <p className="text-[#8A8F98] text-sm leading-relaxed max-w-xs">
-                Designed for the future of software development. Built with React, Tailwind, and Framer Motion.
+                {t('footerDesc')}
               </p>
             </div>
             
-            {[
-              { title: "Product", links: ["Features", "Integrations", "Pricing", "Changelog"] },
-              { title: "Company", links: ["About us", "Careers", "Blog", "Customers"] },
-              { title: "Resources", links: ["Community", "Contact", "DPA", "Terms of service"] },
-              { title: "Developers", links: ["API", "Status", "GitHub", "README"] }
-            ].map((col, i) => (
-              <div key={i}>
-                <h4 className="text-sm font-medium text-white mb-4">{col.title}</h4>
-                <ul className="space-y-3">
-                  {col.links.map((link, j) => (
-                    <li key={j}>
-                      <a href="#" className="text-sm text-[#8A8F98] hover:text-white transition-colors">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <div>
+              <h4 className="text-sm font-medium text-white mb-4">{t('demos')}</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/demo/restaurant" className="text-sm text-[#8A8F98] hover:text-white transition-colors">
+                    {t('restaurant')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/demo/photographer" className="text-sm text-[#8A8F98] hover:text-white transition-colors">
+                    {t('portfolio')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/demo/comic-store" className="text-sm text-[#8A8F98] hover:text-white transition-colors">
+                    {t('ecommerce')}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-white mb-4">{t('socials')}</h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="https://github.com/S-Zanardo" target="_blank" rel="noopener noreferrer" className="text-sm text-[#8A8F98] hover:text-white transition-colors flex items-center gap-2">
+                    <Github className="w-4 h-4" /> GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.linkedin.com/in/simone-zanardo-122b0b148/" target="_blank" rel="noopener noreferrer" className="text-sm text-[#8A8F98] hover:text-white transition-colors flex items-center gap-2">
+                    <Linkedin className="w-4 h-4" /> LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a href="https://it.fiverr.com/s/Aya12zQ" target="_blank" rel="noopener noreferrer" className="text-sm text-[#8A8F98] hover:text-white transition-colors flex items-center gap-2">
+                    <Globe className="w-4 h-4" /> Fiverr
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/[0.05] gap-4">
-            <p className="text-xs text-[#8A8F98]">© {new Date().getFullYear()} DevStudio. All rights reserved.</p>
+            <p className="text-xs text-[#8A8F98]">© {new Date().getFullYear()} Zanardo DEV. {t('rightsReserved')}</p>
             <div className="flex gap-6">
-              <Github className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
-              <Linkedin className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
-              <Globe className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
+              <a href="https://github.com/S-Zanardo" target="_blank" rel="noopener noreferrer">
+                <Github className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
+              </a>
+              <a href="https://www.linkedin.com/in/simone-zanardo-122b0b148/" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
+              </a>
+              <a href="https://it.fiverr.com/s/Aya12zQ" target="_blank" rel="noopener noreferrer">
+                <Globe className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
+              </a>
             </div>
           </div>
         </div>
