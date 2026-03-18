@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Camera, Instagram, Mail, Twitter, Menu, X, Linkedin } from 'lucide-react';
+import { ArrowLeft, Camera, Instagram, Mail, Twitter, Menu, X, Linkedin, Loader2, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 function GalleryItem({ item, index }: { item: { src: string, description: string }, index: number }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -82,6 +83,16 @@ function GalleryItem({ item, index }: { item: { src: string, description: string
 export default function Photographer() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'work' | 'contact'>('work');
+  
+  // Form State
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const portfolioItems = [
     {
@@ -119,6 +130,68 @@ export default function Photographer() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submission started with data:", formData);
+    setIsSubmitting(true);
+    
+    try {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_PHOTOGRAPHER_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      console.log("Checking EmailJS Keys for Photographer:", { 
+        hasServiceId: !!serviceId, 
+        hasTemplateId: !!templateId, 
+        hasPublicKey: !!publicKey 
+      });
+
+      if (serviceId && templateId && publicKey) {
+        const response = await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            user_name: `${formData.firstName} ${formData.lastName}`,
+            user_email: formData.email,
+            message: formData.message,
+            project_type: "Photography Portfolio Inquiry"
+          },
+          publicKey
+        );
+        console.log("EmailJS Success Response:", response);
+      } else {
+        console.warn("EmailJS keys missing. Simulating email sending. Please check your environment variables.");
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      setIsSuccess(true);
+      setFormData({ firstName: '', lastName: '', email: '', message: '' });
+      
+      setTimeout(() => {
+        setIsSuccess(false);
+        setActiveTab('work');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 4000);
+      
+    } catch (error: any) {
+      console.error("Failed to send email:", error);
+      alert(`Errore durante l'invio del messaggio: ${error?.text || error?.message || "Unknown error"}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormValid = 
+    formData.firstName.trim() !== '' && 
+    formData.lastName.trim() !== '' && 
+    formData.message.trim() !== '' && 
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
 
   return (
     <div className="min-h-screen bg-white text-black font-sans">
@@ -199,40 +272,94 @@ export default function Photographer() {
           >
             Let's <span className="italic font-serif">Connect</span>
           </motion.h1>
-          <motion.form 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-8"
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Thank you for your inquiry. I will get back to you soon.");
-              setActiveTab('work');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-xs tracking-widest uppercase text-gray-500">First Name</label>
-                <input type="text" className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent" required />
+          
+          {isSuccess ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-50 p-12 text-center border border-gray-100 flex flex-col items-center justify-center"
+            >
+              <CheckCircle2 className="w-16 h-16 text-black mb-6" />
+              <h3 className="text-2xl font-light mb-4">Message Sent Successfully</h3>
+              <p className="text-gray-500 font-light">Thank you for your inquiry. I will get back to you soon.</p>
+            </motion.div>
+          ) : (
+            <motion.form 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-8"
+              onSubmit={handleSubmit}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-xs tracking-widest uppercase text-gray-500">First Name</label>
+                  <input 
+                    type="text" 
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent" 
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs tracking-widest uppercase text-gray-500">Last Name</label>
+                  <input 
+                    type="text" 
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent" 
+                    required 
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs tracking-widest uppercase text-gray-500">Last Name</label>
-                <input type="text" className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent" required />
+                <label className="text-xs tracking-widest uppercase text-gray-500">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={`w-full border-b pb-2 focus:outline-none transition-colors bg-transparent ${
+                    formData.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+                      ? 'border-red-500 text-red-600 focus:border-red-500'
+                      : 'border-black focus:border-gray-400'
+                  }`} 
+                  required 
+                />
+                {formData.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && (
+                  <p className="text-red-500 text-xs mt-1">Inserisci un indirizzo email valido.</p>
+                )}
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs tracking-widest uppercase text-gray-500">Email Address</label>
-              <input type="email" className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs tracking-widest uppercase text-gray-500">Project Description</label>
-              <textarea rows={4} className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent resize-none" required placeholder="Tell me about your vision..."></textarea>
-            </div>
-            <button type="submit" className="bg-black text-white px-8 py-4 text-xs tracking-widest uppercase hover:bg-gray-800 transition-colors w-full md:w-auto">
-              Send Inquiry
-            </button>
-          </motion.form>
+              <div className="space-y-2">
+                <label className="text-xs tracking-widest uppercase text-gray-500">Project Description</label>
+                <textarea 
+                  rows={4} 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  className="w-full border-b border-black pb-2 focus:outline-none focus:border-gray-400 transition-colors bg-transparent resize-none" 
+                  required 
+                  placeholder="Tell me about your vision..."
+                ></textarea>
+              </div>
+              <button 
+                type="submit" 
+                disabled={isSubmitting || !isFormValid}
+                className="bg-black text-white px-8 py-4 text-xs tracking-widest uppercase hover:bg-gray-800 transition-colors w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                  </>
+                ) : (
+                  'Send Inquiry'
+                )}
+              </button>
+            </motion.form>
+          )}
         </div>
       )}
 

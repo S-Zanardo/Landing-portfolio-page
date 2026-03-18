@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail, BookOpen } from 'lucide-react';
+import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail, BookOpen, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
 
 export default function Restaurant() {
   const [isReservationOpen, setIsReservationOpen] = useState(false);
@@ -10,6 +11,7 @@ export default function Restaurant() {
   const [email, setEmail] = useState('');
   const [partySize, setPartySize] = useState(2);
   const [bookingStep, setBookingStep] = useState<'select' | 'confirm' | 'success'>('select');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Generate next 7 days
   const dates = Array.from({ length: 7 }, (_, i) => {
@@ -25,15 +27,55 @@ export default function Restaurant() {
     "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"
   ];
 
-  const handleBook = () => {
-    setBookingStep('success');
-    setTimeout(() => {
-      setIsReservationOpen(false);
-      setBookingStep('select');
-      setSelectedDate(null);
-      setSelectedTime(null);
-      setEmail('');
-    }, 3000);
+  const handleBook = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Check if EmailJS is configured
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      console.log("Checking EmailJS Keys:", { 
+        hasServiceId: !!serviceId, 
+        hasTemplateId: !!templateId, 
+        hasPublicKey: !!publicKey 
+      });
+
+      if (serviceId && templateId && publicKey) {
+        const response = await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            user_email: email,
+            date: selectedDate?.toLocaleDateString(),
+            time: selectedTime,
+            party_size: partySize,
+          },
+          publicKey
+        );
+        console.log("EmailJS Success Response:", response);
+      } else {
+        // Fallback simulation if keys are missing
+        console.warn("EmailJS keys missing. Simulating email sending. Please check your environment variables.");
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      setBookingStep('success');
+      setTimeout(() => {
+        setIsReservationOpen(false);
+        setBookingStep('select');
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setEmail('');
+      }, 3000);
+    } catch (error: any) {
+      console.error("Failed to send email:", error);
+      const errorMessage = error?.text || error?.message || "Unknown error occurred";
+      alert(`Errore durante l'invio dell'email: ${errorMessage}\n\nControlla la console per maggiori dettagli.`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,6 +140,8 @@ export default function Restaurant() {
                     <h4 className="text-2xl font-bold mb-2">Reservation Confirmed!</h4>
                     <p className="text-gray-600 font-sans">
                       We look forward to seeing you on {selectedDate?.toLocaleDateString()} at {selectedTime}.
+                      <br />
+                      <span className="text-sm mt-2 block text-gray-500">A confirmation email has been sent to {email}.</span>
                     </p>
                   </div>
                 ) : (
@@ -188,9 +232,16 @@ export default function Restaurant() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full p-4 rounded-xl border border-gray-200 font-sans focus:outline-none focus:border-[#D94E1F] focus:ring-1 focus:ring-[#D94E1F] transition-all"
+                        className={`w-full p-4 rounded-xl border font-sans focus:outline-none transition-all ${
+                          email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                            ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 bg-red-50 text-red-900'
+                            : 'border-gray-200 focus:border-[#D94E1F] focus:ring-1 focus:ring-[#D94E1F]'
+                        }`}
                         required
                       />
+                      {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+                        <p className="text-red-500 text-xs mt-2 font-sans font-medium">Inserisci un indirizzo email valido.</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -211,11 +262,17 @@ export default function Restaurant() {
                     )}
                   </div>
                   <button
-                    disabled={!selectedDate || !selectedTime || !email}
+                    disabled={!selectedDate || !selectedTime || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || isSubmitting}
                     onClick={handleBook}
-                    className="bg-[#D94E1F] text-white px-8 py-3 rounded-full font-sans font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#B53E16] transition-colors shadow-lg shadow-orange-900/20"
+                    className="bg-[#D94E1F] text-white px-8 py-3 rounded-full font-sans font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#B53E16] transition-colors shadow-lg shadow-orange-900/20 flex items-center gap-2"
                   >
-                    Confirm Booking
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                      </>
+                    ) : (
+                      'Confirm Booking'
+                    )}
                   </button>
                 </div>
               )}

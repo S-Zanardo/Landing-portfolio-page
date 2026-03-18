@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
 import { comics } from '../../data/comics';
 import { useComicCart } from '../../context/ComicCartContext';
 
@@ -10,6 +11,67 @@ export default function ComicStore() {
   const [showModal, setShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
   const { cartCount } = useComicCart();
+
+  // Catalog Modal State
+  const [showCatalogModal, setShowCatalogModal] = useState(false);
+  const [catalogForm, setCatalogForm] = useState({ name: '', email: '', address: '' });
+  const [isSubmittingCatalog, setIsSubmittingCatalog] = useState(false);
+  const [catalogSuccess, setCatalogSuccess] = useState(false);
+
+  const handleCatalogSubmit = async (e: React.FormEvent | React.MouseEvent) => {
+    e.preventDefault();
+    console.log("Catalog submission started:", catalogForm);
+    setIsSubmittingCatalog(true);
+    
+    try {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_COMIC_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      console.log("Checking EmailJS Keys for Comic Store:", { 
+        hasServiceId: !!serviceId, 
+        hasTemplateId: !!templateId, 
+        hasPublicKey: !!publicKey 
+      });
+
+      if (serviceId && templateId && publicKey) {
+        const response = await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            user_name: catalogForm.name,
+            user_email: catalogForm.email,
+            shipping_address: catalogForm.address,
+            project_type: "Comic Store Free Catalog"
+          },
+          publicKey
+        );
+        console.log("EmailJS Success Response:", response);
+      } else {
+        console.warn("EmailJS keys missing. Simulating email sending. Please check your environment variables.");
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+
+      setCatalogSuccess(true);
+      setCatalogForm({ name: '', email: '', address: '' });
+      
+      setTimeout(() => {
+        setCatalogSuccess(false);
+        setShowCatalogModal(false);
+      }, 4000);
+      
+    } catch (error: any) {
+      console.error("Failed to send email:", error);
+      alert(`Errore durante l'invio: ${error?.text || error?.message || "Unknown error"}`);
+    } finally {
+      setIsSubmittingCatalog(false);
+    }
+  };
+
+  const isCatalogValid = 
+    catalogForm.name.trim() !== '' && 
+    catalogForm.address.trim() !== '' && 
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(catalogForm.email);
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -91,11 +153,19 @@ export default function ComicStore() {
             <p className="text-xl text-gray-300 mb-8 max-w-lg">
               The web-slinger returns in an all-new series that will change the Marvel universe forever!
             </p>
-            <Link to="/demo/comic-store/search">
-              <button className="bg-[#FFE600] text-black font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                <span className="block skew-x-[10deg]">Shop Now</span>
+            <div className="flex flex-wrap gap-4">
+              <Link to="/demo/comic-store/search">
+                <button className="bg-[#FFE600] text-black font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                  <span className="block skew-x-[10deg]">Shop Now</span>
+                </button>
+              </Link>
+              <button 
+                onClick={() => setShowCatalogModal(true)}
+                className="bg-[#FF0055] text-white font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:text-[#FF0055] hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+              >
+                <span className="block skew-x-[10deg]">Free Catalog</span>
               </button>
-            </Link>
+            </div>
           </div>
           
           <motion.img 
@@ -219,6 +289,112 @@ export default function ComicStore() {
                   <div className="text-6xl mb-4">🎉</div>
                   <h3 className="font-comic text-3xl text-black mb-2 uppercase">BOOM! You're In!</h3>
                   <p className="text-black font-bold text-lg">Thanks for subscribing! Get ready for some epic updates.</p>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Catalog Request Modal */}
+      <AnimatePresence>
+        {showCatalogModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isSubmittingCatalog && setShowCatalogModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ scale: 0.5, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.5, opacity: 0, y: 50 }}
+              className="relative bg-white border-4 border-black p-8 max-w-lg w-full shadow-[12px_12px_0px_0px_rgba(255,0,85,1)]"
+            >
+              <button 
+                onClick={() => setShowCatalogModal(false)}
+                className="absolute top-4 right-4 hover:scale-110 transition-transform bg-black text-white rounded-full p-1"
+                disabled={isSubmittingCatalog}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              {catalogSuccess ? (
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">📦</div>
+                  <h3 className="font-comic text-3xl text-black mb-4 uppercase">KABOOM!</h3>
+                  <p className="text-black font-bold text-lg">
+                    Your free catalog is on its way! Keep an eye on your mailbox.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center mb-6">
+                    <h3 className="font-comic text-3xl text-black uppercase mb-2">Get a Free Catalog!</h3>
+                    <p className="text-gray-600 font-bold">Enter your details and we'll ship our latest comic catalog right to your door.</p>
+                  </div>
+                  
+                  <div className="space-y-4 text-left">
+                    <div>
+                      <label className="block text-black font-black uppercase mb-1">Full Name</label>
+                      <input 
+                        type="text" 
+                        value={catalogForm.name}
+                        onChange={(e) => setCatalogForm({...catalogForm, name: e.target.value})}
+                        className="w-full px-4 py-3 bg-gray-50 border-4 border-black font-bold text-black focus:outline-none focus:border-[#FF0055] transition-colors"
+                        placeholder="Peter Parker"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-black font-black uppercase mb-1">Email Address</label>
+                      <input 
+                        type="email" 
+                        value={catalogForm.email}
+                        onChange={(e) => setCatalogForm({...catalogForm, email: e.target.value})}
+                        className={`w-full px-4 py-3 bg-gray-50 border-4 font-bold text-black focus:outline-none transition-colors ${
+                          catalogForm.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(catalogForm.email)
+                            ? 'border-red-500 focus:border-red-500 bg-red-50'
+                            : 'border-black focus:border-[#FF0055]'
+                        }`}
+                        placeholder="spidey@dailybugle.com"
+                        required
+                      />
+                      {catalogForm.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(catalogForm.email) && (
+                        <p className="text-red-500 text-xs font-bold mt-1 uppercase">Invalid email format</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label className="block text-black font-black uppercase mb-1">Shipping Address</label>
+                      <textarea 
+                        value={catalogForm.address}
+                        onChange={(e) => setCatalogForm({...catalogForm, address: e.target.value})}
+                        className="w-full px-4 py-3 bg-gray-50 border-4 border-black font-bold text-black focus:outline-none focus:border-[#FF0055] transition-colors resize-none"
+                        placeholder="20 Ingram Street, Queens, NY"
+                        rows={3}
+                        required
+                      />
+                    </div>
+                    
+                    <button 
+                      type="button"
+                      onClick={handleCatalogSubmit}
+                      disabled={isSubmittingCatalog || !isCatalogValid}
+                      className="w-full bg-[#FFE600] text-black font-black uppercase text-xl px-8 py-4 hover:bg-[#FF0055] hover:text-white transition-all border-4 border-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
+                    >
+                      {isSubmittingCatalog ? (
+                        <>
+                          <Loader2 className="w-6 h-6 animate-spin" /> Sending...
+                        </>
+                      ) : (
+                        'Send My Catalog!'
+                      )}
+                    </button>
+                  </div>
                 </>
               )}
             </motion.div>
