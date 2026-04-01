@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { comics } from '../../data/comics';
 import comicSpeechBubble from '../../context/comic-bubble.png';

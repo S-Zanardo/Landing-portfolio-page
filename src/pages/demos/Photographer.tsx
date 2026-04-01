@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Camera, Instagram, Mail, Twitter, Menu, X, Linkedin, Loader2, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 
-function GalleryItem({ item, index }: { item: { src: string, description: string }, index: number }) {
+function GalleryItem({ item, index }: { item: { src: string, description: string }, index: number, key?: React.Key }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isEven = index % 2 === 0;

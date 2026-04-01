@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Trash2, ShoppingBag, CheckCircle, X, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useComicCart } from '../../context/ComicCartContext';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 
 export default function ComicCart() {
