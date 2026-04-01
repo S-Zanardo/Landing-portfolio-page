@@ -32,13 +32,17 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <button
               onClick={toggleLanguage}
-              className="w-10 h-10 rounded-full bg-[#F2F2F3] text-black flex items-center justify-center hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] text-xl"
+              className="w-10 h-10 rounded-full bg-[#F2F2F3] flex items-center justify-center hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] overflow-hidden"
               title={language === 'en' ? "Switch to Italian" : "Passa all'inglese"}
             >
-              {language === 'en' ? '🇮🇹' : '🇺🇸'}
+              {language === 'en' ? (
+                <img src="https://flagcdn.com/w80/it.png" alt="Italian Flag" className="w-full h-full object-cover" />
+              ) : (
+                <img src="https://flagcdn.com/w80/us.png" alt="USA Flag" className="w-full h-full object-cover" />
+              )}
             </button>
             <a 
-              href="https://www.fiverr.com/" 
+              href="https://it.fiverr.com/s/jjzYjko" 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-[#F2F2F3] text-black px-4 py-2 rounded-full text-[13px] font-medium hover:bg-white/90 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)] text-center flex items-center justify-center"
@@ -253,7 +257,7 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://it.fiverr.com/s/Aya12zQ" target="_blank" rel="noopener noreferrer" className="text-sm text-[#8A8F98] hover:text-white transition-colors flex items-center gap-2">
+              <a href="https://it.fiverr.com/s/jjzYjko" target="_blank" rel="noopener noreferrer" className="text-sm text-[#8A8F98] hover:text-white transition-colors flex items-center gap-2">
                     <Globe className="w-4 h-4" /> Fiverr
                   </a>
                 </li>
@@ -270,7 +274,7 @@ export default function Home() {
               <a href="https://www.linkedin.com/in/simone-zanardo-122b0b148/" target="_blank" rel="noopener noreferrer">
                 <Linkedin className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
               </a>
-              <a href="https://it.fiverr.com/s/Aya12zQ" target="_blank" rel="noopener noreferrer">
+              <a href="https://it.fiverr.com/s/jjzYjko" target="_blank" rel="noopener noreferrer">
                 <Globe className="w-4 h-4 text-[#8A8F98] hover:text-white cursor-pointer transition-colors" />
               </a>
             </div>

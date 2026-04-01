@@ -47,10 +47,10 @@ export default function Restaurant() {
           serviceId,
           templateId,
           {
+            user_name: "Restaurant Guest",
             user_email: email,
-            date: selectedDate?.toLocaleDateString(),
-            time: selectedTime,
-            party_size: partySize,
+            project_type: "🍽️ Restaurant Reservation",
+            message: `Reservation Details:\nDate: ${selectedDate?.toLocaleDateString()}\nTime: ${selectedTime}\nParty Size: ${partySize} Guests`,
           },
           publicKey
         );

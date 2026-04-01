@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, Camera, Utensils, ShoppingBag, ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
 import { useState } from 'react';

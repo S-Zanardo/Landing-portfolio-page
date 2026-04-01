@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { comics } from '../../data/comics';
+import comicSpeechBubble from '../../context/comic-bubble.png';
 import { useComicCart } from '../../context/ComicCartContext';
 
 export default function ComicStore() {
@@ -25,7 +26,7 @@ export default function ComicStore() {
     
     try {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_COMIC_TEMPLATE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
       console.log("Checking EmailJS Keys for Comic Store:", { 
@@ -41,8 +42,8 @@ export default function ComicStore() {
           {
             user_name: catalogForm.name,
             user_email: catalogForm.email,
-            shipping_address: catalogForm.address,
-            project_type: "Comic Store Free Catalog"
+            project_type: "📖 Comic Store Free Catalog Request",
+            message: `Please send the catalog to the following address:\n${catalogForm.address}`
           },
           publicKey
         );
@@ -172,8 +173,8 @@ export default function ComicStore() {
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            src="https://png.pngtree.com/png-clipart/20230414/original/pngtree-comic-style-speech-bubble-png-image_9054593.png"
-            className="absolute right-0 top-20 w-[600px] hidden lg:block drop-shadow-2xl rotate-12 opacity-50"
+            src={comicSpeechBubble} // Usa l'immagine importata
+            className="absolute right-0 top-20 w-[600px] block drop-shadow-2xl rotate-12 opacity-50" // Ho lasciato block di default, puoi aggiustare le classi se vuoi nasconderla su schermi piccoli
             alt="Comic Effect"
           />
         </div>

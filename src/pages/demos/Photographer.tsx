@@ -13,7 +13,7 @@ function GalleryItem({ item, index }: { item: { src: string, description: string
     if (isExpanded) return;
     timerRef.current = setTimeout(() => {
       setIsExpanded(true);
-    }, 2000);
+    }, 500);
   };
 
   const handlePointerUpOrLeave = () => {
@@ -52,7 +52,7 @@ function GalleryItem({ item, index }: { item: { src: string, description: string
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
         {!isExpanded && (
           <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white text-xs tracking-widest uppercase bg-black/50 px-2 py-1 backdrop-blur-sm">Hold 2s to view</span>
+            <span className="text-white text-xs tracking-widest uppercase bg-black/50 px-2 py-1 backdrop-blur-sm">Hold 0.5s to view</span>
           </div>
         )}
       </motion.div>
@@ -143,7 +143,7 @@ export default function Photographer() {
     
     try {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_PHOTOGRAPHER_TEMPLATE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
       console.log("Checking EmailJS Keys for Photographer:", { 
@@ -160,7 +160,7 @@ export default function Photographer() {
             user_name: `${formData.firstName} ${formData.lastName}`,
             user_email: formData.email,
             message: formData.message,
-            project_type: "Photography Portfolio Inquiry"
+            project_type: "📸 Photography Portfolio Inquiry"
           },
           publicKey
         );

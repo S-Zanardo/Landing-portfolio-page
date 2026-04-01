@@ -35,7 +35,7 @@ export default function ComicCart() {
     
     try {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_COMIC_TEMPLATE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
       console.log("Checking EmailJS Keys for Checkout:", { 
@@ -50,9 +50,8 @@ export default function ComicCart() {
       const templateParams = {
         user_name: checkoutForm.name,
         user_email: checkoutForm.email,
-        shipping_address: checkoutForm.address,
-        project_type: "Comic Store Order",
-        message: `Order Details:\n${orderDetails}\n\nTotal: $${total}`
+        project_type: "📖 Comic Store Order",
+        message: `Shipping Address:\n${checkoutForm.address}\n\nOrder Details:\n${orderDetails}\n\nTotal: $${total}`
       };
 
       console.log("Sending to EmailJS with params:", templateParams);
