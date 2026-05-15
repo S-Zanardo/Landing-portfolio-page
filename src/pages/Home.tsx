@@ -80,10 +80,13 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="#demos" className="h-12 px-8 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2">
+              <button 
+                onClick={() => document.getElementById('demos')?.scrollIntoView({ behavior: 'smooth' })}
+                className="h-12 px-8 rounded-full bg-white text-black font-medium hover:bg-white/90 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] flex items-center gap-2"
+              >
                 {t('tryDemos')}
                 <ChevronRight className="w-4 h-4 opacity-50" />
-              </a>
+              </button>
             </div>
           </motion.div>
         </div>

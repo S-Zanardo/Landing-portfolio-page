@@ -1,96 +1,10 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Wheat, Milk, Nut, Fish, Egg, Info } from 'lucide-react';
+import { ArrowLeft, Wheat, Milk, Nut, Fish, Egg, Info, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Papa from 'papaparse';
 
-const menuItems = [
-  {
-    category: "Starters",
-    items: [
-      {
-        id: 1,
-        name: "Bruschetta al Pomodoro",
-        description: "Toasted homemade bread topped with fresh tomatoes, garlic, basil, and extra virgin olive oil.",
-        price: "$12",
-        allergens: ["Gluten"],
-        image: "https://images.unsplash.com/photo-1572695157363-bc31c5d4efb5?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 2,
-        name: "Calamari Fritti",
-        description: "Crispy fried squid rings served with lemon wedges and marinara sauce.",
-        price: "$16",
-        allergens: ["Gluten", "Molluscs", "Egg"],
-        image: "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 3,
-        name: "Caprese Salad",
-        description: "Fresh mozzarella, vine-ripened tomatoes, and basil, drizzled with balsamic glaze.",
-        price: "$14",
-        allergens: ["Milk"],
-        image: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?auto=format&fit=crop&q=80&w=800"
-      }
-    ]
-  },
-  {
-    category: "Mains",
-    items: [
-      {
-        id: 4,
-        name: "Tagliatelle al Tartufo",
-        description: "Fresh handmade pasta with black truffle cream sauce and parmesan.",
-        price: "$24",
-        allergens: ["Gluten", "Milk", "Egg"],
-        image: "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 5,
-        name: "Osso Buco",
-        description: "Braised veal shanks cooked with vegetables, white wine and broth.",
-        price: "$32",
-        allergens: ["Celery"],
-        image: "https://images.unsplash.com/photo-1534939561126-855b8675edd7?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 6,
-        name: "Grilled Salmon",
-        description: "Atlantic salmon fillet served with roasted asparagus and lemon butter sauce.",
-        price: "$28",
-        allergens: ["Fish", "Milk"],
-        image: "https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 7,
-        name: "Risotto ai Funghi",
-        description: "Creamy arborio rice cooked with porcini mushrooms, white wine, and parmesan.",
-        price: "$22",
-        allergens: ["Milk"],
-        image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&q=80&w=800"
-      }
-    ]
-  },
-  {
-    category: "Desserts",
-    items: [
-      {
-        id: 8,
-        name: "Tiramisu Classico",
-        description: "Traditional coffee-flavoured Italian dessert.",
-        price: "$12",
-        allergens: ["Gluten", "Milk", "Egg"],
-        image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800"
-      },
-      {
-        id: 9,
-        name: "Panna Cotta",
-        description: "Silky vanilla cream pudding topped with berry coulis.",
-        price: "$10",
-        allergens: ["Milk"],
-        image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=800"
-      }
-    ]
-  }
-];
+const GOOGLE_SHEETS_CSV_URL: string = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR2z_mLEfl3Zu6i-irGSqf2oWshwyO7efbCnurI3Peo2p_cbvBjgYPWs1oBeWRXcg9qZjO-XE6ewQVp/pub?output=csv";
 
 const AllergenIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -104,6 +18,75 @@ const AllergenIcon = ({ name }: { name: string }) => {
 };
 
 export default function RestaurantMenu() {
+  const [menuItems, setMenuItems] = useState<{category: string, items: any[]}[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (GOOGLE_SHEETS_CSV_URL === "INSERISCI_QUI_IL_TUO_LINK_CSV_DEL_RISTORANTE") {
+      setError("Link al CSV di Google Sheets non configurato. Inserisci un URL valido.");
+      setIsLoading(false);
+      return;
+    }
+
+    Papa.parse(GOOGLE_SHEETS_CSV_URL, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      transformHeader: (header) => header.trim().toLowerCase(),
+      complete: (results) => {
+        const data = results.data as any[];
+        const validItems = data.filter(item => item && item.name && item.category);
+        
+        const grouped = validItems.reduce((acc, item) => {
+          const category = item.category;
+          if (!acc[category]) {
+            acc[category] = { category: category, items: [] };
+          }
+          
+          acc[category].items.push({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            price: typeof item.price === 'number' ? `$${item.price}` : item.price,
+            allergens: item.allergens ? String(item.allergens).split(',').map(a => a.trim()) : [],
+            image: item.image
+          });
+          
+          return acc;
+        }, {} as Record<string, {category: string, items: any[]}>);
+
+        setMenuItems(Object.values(grouped));
+        setIsLoading(false);
+      },
+      error: (err: any) => {
+        console.error("Errore CSV:", err);
+        setError(err.message);
+        setIsLoading(false);
+      }
+    });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FDF8F5] flex items-center justify-center text-[#D94E1F] font-serif text-2xl">
+        <Loader2 className="w-8 h-8 animate-spin mr-3" /> Loading menu...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#FDF8F5] flex flex-col items-center justify-center text-[#2C1810] font-sans p-6 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 mb-4 max-w-lg">
+          <p className="font-bold">Cannot load menu.</p>
+          <p className="text-sm mt-1">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-[#2C1810] font-serif">
       {/* Navigation */}
@@ -150,7 +133,7 @@ export default function RestaurantMenu() {
                     <div className="flex flex-wrap items-center gap-2 md:gap-4 pt-4 border-t border-[#E6D5CC]/30">
                       <span className="text-xs font-sans font-semibold text-gray-400 uppercase tracking-wider">Allergens:</span>
                       <div className="flex flex-wrap gap-2">
-                        {item.allergens.map((allergen, i) => (
+                        {item.allergens.map((allergen: string, i: number) => (
                           <div key={i} className="flex items-center gap-1 text-xs font-sans text-gray-500 bg-gray-100 px-2 py-1 rounded-full" title={allergen}>
                             <AllergenIcon name={allergen} />
                             <span>{allergen}</span>

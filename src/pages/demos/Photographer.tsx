@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Camera, Instagram, Mail, Twitter, Menu, X, Linkedin, Loader2, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 
 function GalleryItem({ item, index }: { item: { src: string, description: string }, index: number, key?: React.Key }) {
@@ -88,12 +88,26 @@ export default function Photographer() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    // Added 'email' to formData initialization to ensure it's always a string.
+    // This resolves potential TypeScript issues related to form handling.
     email: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // New state for Polaroid modal
+  const [showPolaroidContactModal, setShowPolaroidContactModal] = useState(false);
+  const [currentPolaroidImage, setCurrentPolaroidImage] = useState<{ src: string, description: string } | null>(null);
+  const [hasTriggeredByScroll, setHasTriggeredByScroll] = useState(false);
+
+  // Function to pick a random image for the Polaroid
+  const pickRandomPolaroidImage = () => {
+    if (portfolioItems.length > 0) {
+      const randomIndex = Math.floor(Math.random() * portfolioItems.length);
+      setCurrentPolaroidImage(portfolioItems[randomIndex]);
+    }
+  };
   const portfolioItems = [
     {
       src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=1000",
@@ -120,13 +134,17 @@ export default function Photographer() {
       description: "A quiet path through the dense forest. The muted tones and atmospheric fog invite the viewer into a serene, almost melancholic woodland journey."
     }
   ];
-
+  
   const handleNavClick = (tab: 'work' | 'contact' | 'about') => {
     setIsMenuOpen(false);
     if (tab === 'about') {
       document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' });
     } else {
       setActiveTab(tab);
+      // If navigating to contact, ensure the contact form is visible at the top
+      if (tab === 'contact') {
+        document.getElementById('contact-form-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -186,6 +204,35 @@ export default function Photographer() {
       setIsSubmitting(false);
     }
   };
+
+  const handleOpenPolaroidContact = () => {
+    pickRandomPolaroidImage();
+    setShowPolaroidContactModal(true);
+  };
+
+  // Ascolta lo scorrimento per mostrare la Polaroid a fine pagina
+  useEffect(() => {
+    const handleScroll = () => {
+      if (activeTab !== 'work') return;
+
+      const isBottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 50;
+      
+      if (isBottom && !hasTriggeredByScroll && !showPolaroidContactModal) {
+        setHasTriggeredByScroll(true);
+        handleOpenPolaroidContact();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasTriggeredByScroll, showPolaroidContactModal, activeTab]);
+
+  // When the polaroid itself is clicked
+  const handlePolaroidClick = () => {
+    setShowPolaroidContactModal(false);
+    handleNavClick('contact'); // Switch to contact tab and scroll
+  };
+
 
   const isFormValid = 
     formData.firstName.trim() !== '' && 
@@ -265,6 +312,7 @@ export default function Photographer() {
       ) : (
         /* Contact Form */
         <div className="pt-40 pb-20 px-6 max-w-3xl mx-auto min-h-[70vh]">
+          <div id="contact-form-section"> {/* Anchor for scrolling */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -360,6 +408,8 @@ export default function Photographer() {
               </button>
             </motion.form>
           )}
+          </div>
+
         </div>
       )}
 
@@ -373,6 +423,15 @@ export default function Photographer() {
               <p className="text-gray-600 leading-relaxed font-light text-lg">
                 I am a contemporary photographer based in New York, specializing in capturing the subtle interplay between light, shadow, and human emotion. With over a decade of experience in editorial and fine art photography, my work seeks to find stillness in a chaotic world. Let's create something beautiful together.
               </p>
+            </div>
+            {/* New Contact Me Button in Footer */}
+            <div className="mt-8 mb-8">
+              <button
+                onClick={handleOpenPolaroidContact}
+                className="h-12 px-8 border border-black rounded-full flex items-center gap-3 hover:bg-black hover:text-white transition-colors text-xs tracking-widest uppercase"
+              >
+                <Mail className="w-5 h-5" /> Contattami
+              </button>
             </div>
             <a href="mailto:hello@elenavance.com" className="text-xl sm:text-2xl md:text-3xl underline decoration-1 underline-offset-8 hover:text-gray-600 transition-colors break-all sm:break-normal">
               hello@elenavance.com
@@ -392,6 +451,55 @@ export default function Photographer() {
           </div>
         </div>
       </footer>
+
+      {/* Polaroid Contact Modal */}
+      <AnimatePresence>
+        {showPolaroidContactModal && currentPolaroidImage && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPolaroidContactModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, y: '100vh', rotate: '15deg', scale: 0.5 }}
+              animate={{ opacity: 1, y: 0, rotate: '0deg', scale: 1 }}
+              exit={{ opacity: 0, y: '100vh', rotate: '-15deg', scale: 0.5 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.6 }}
+              onClick={handlePolaroidClick}
+              className="relative bg-white w-full max-w-sm aspect-[5/6] p-4 shadow-xl flex flex-col items-center justify-center cursor-pointer border border-gray-100"
+              style={{ filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.4))' }} // Extra shadow for depth
+            >
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowPolaroidContactModal(false); }}
+                className="absolute top-2 right-2 p-1 text-gray-500 hover:text-black transition-colors z-10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Polaroid Image */}
+              <div className="w-full h-[70%] bg-gray-200 overflow-hidden mb-4">
+                <img 
+                  src={currentPolaroidImage.src} 
+                  alt="Polaroid Image" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Polaroid Text Area */}
+              <div className="w-full text-center flex-1 flex items-center justify-center">
+                {/* Using a generic serif for a slightly artistic look, suggest importing a custom font for true handwritten feel */}
+                <span className="text-3xl text-black font-serif italic" style={{ fontFamily: 'var(--font-cursive, cursive)' }}>
+                  Contattami
+                </span>
+              </div>
+              <span className="absolute bottom-2 text-xs text-gray-400 font-sans">Clicca per aprire il modulo</span>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

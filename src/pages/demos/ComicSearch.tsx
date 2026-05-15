@@ -1,18 +1,37 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Search, Star } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Search, Star, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { comics } from '../../data/comics';
 import { useComicCart } from '../../context/ComicCartContext';
+import { useCatalog } from './useCatalog';
+
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNByb9NJb5wmvrS4aylrokNm0E3Hz18UFh39rzEs2uiO_lYXMrXfyjRrS-0PCSbujivMLtxgnFJ-63/pub?output=csv";
 
 export default function ComicSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const { cartCount } = useComicCart();
+  const { items: comics, isLoading, error } = useCatalog(GOOGLE_SHEETS_CSV_URL);
 
   const filteredComics = comics.filter(comic => 
-    comic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    comic.description.toLowerCase().includes(searchTerm.toLowerCase())
+    (comic.title?.toString().toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (comic.description?.toString().toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FFE600] font-comic text-3xl">
+        <Loader2 className="w-10 h-10 animate-spin mr-4" /> Loading comics...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FF0055] font-comic text-xl">
+        Error loading catalog: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white font-sans overflow-x-hidden">
@@ -62,8 +81,8 @@ export default function ComicSearch() {
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {filteredComics.map((item) => (
-            <Link to={`/demo/comic-store/product/${item.id}`} key={item.id}>
+          {filteredComics.map((item, index) => (
+            <Link to={`/demo/comic-store/product/${item.id || index}`} key={item.id || `search-${index}`}>
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}

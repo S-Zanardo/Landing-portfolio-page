@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChefHat, Clock, MapPin, Phone, Star, Utensils, X, Calendar, Users, Check, Mail, BookOpen, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
+import Papa from 'papaparse';
+
+const GOOGLE_SHEETS_CSV_URL: string = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR2z_mLEfl3Zu6i-irGSqf2oWshwyO7efbCnurI3Peo2p_cbvBjgYPWs1oBeWRXcg9qZjO-XE6ewQVp/pub?output=csv";
 
 export default function Restaurant() {
   const [isReservationOpen, setIsReservationOpen] = useState(false);
@@ -12,6 +15,28 @@ export default function Restaurant() {
   const [partySize, setPartySize] = useState(2);
   const [bookingStep, setBookingStep] = useState<'select' | 'confirm' | 'success'>('select');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Piatti predefiniti mostrati finché non vengono caricati quelli dal CSV
+  const [featuredItems, setFeaturedItems] = useState<any[]>([
+    {
+      name: "Tagliatelle al Tartufo",
+      desc: "Fresh handmade pasta with black truffle cream sauce and parmesan.",
+      price: "$24",
+      image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      name: "Osso Buco",
+      desc: "Braised veal shanks cooked with vegetables, white wine and broth.",
+      price: "$32",
+      image: "https://images.unsplash.com/photo-1544510808-91bcbee1df55?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      name: "Tiramisu Classico",
+      desc: "Traditional coffee-flavoured Italian dessert.",
+      price: "$12",
+      image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800"
+    }
+  ]);
 
   // Generate next 7 days
   const dates = Array.from({ length: 7 }, (_, i) => {
@@ -26,6 +51,67 @@ export default function Restaurant() {
     "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM",
     "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"
   ];
+
+  useEffect(() => {
+    if (GOOGLE_SHEETS_CSV_URL === "INSERISCI_QUI_IL_TUO_LINK_CSV_DEL_RISTORANTE") {
+      return;
+    }
+
+    Papa.parse(GOOGLE_SHEETS_CSV_URL, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      transformHeader: (header) => header.trim().toLowerCase(),
+      complete: (results) => {
+        const data = results.data as any[];
+        const validItems = data.filter(item => item && item.name && item.category);
+        
+        if (validItems.length > 0) {
+          // Crea un seme unico per la giornata odierna
+          const today = new Date();
+          let seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+          
+          const random = () => {
+            const x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+          };
+          
+          // Assegna un peso casuale e rimescola l'array deterministicamente
+          const weightedItems = validItems.map(item => ({ ...item, _weight: random() }));
+          weightedItems.sort((a, b) => a._weight - b._weight);
+          
+          // Cerca un piatto per ogni categoria principale
+          const starter = weightedItems.find(item => String(item.category).toLowerCase().includes('starter'));
+          const main = weightedItems.find(item => String(item.category).toLowerCase().includes('main'));
+          const dessert = weightedItems.find(item => String(item.category).toLowerCase().includes('dessert'));
+
+          const picked = [];
+          if (starter) picked.push(starter);
+          if (main) picked.push(main);
+          if (dessert) picked.push(dessert);
+
+          // Se mancano categorie, completa con gli altri piatti mischiati fino ad averne 3
+          for (const item of weightedItems) {
+            if (picked.length >= 3) break;
+            if (!picked.includes(item)) {
+              picked.push(item);
+            }
+          }
+
+          setFeaturedItems(picked.map(item => ({
+            name: item.name,
+            desc: item.description,
+            price: typeof item.price === 'number' ? `$${item.price}` : item.price,
+            image: item.image || "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800"
+          })));
+        }
+      },
+      error: (err: any) => {
+        console.error("Errore CSV:", err);
+      }
+    });
+  }, []);
 
   const handleBook = async () => {
     setIsSubmitting(true);
@@ -341,26 +427,7 @@ export default function Restaurant() {
           </div>
 
           <div className="grid gap-12">
-            {[
-              {
-                name: "Tagliatelle al Tartufo",
-                desc: "Fresh handmade pasta with black truffle cream sauce and parmesan.",
-                price: "$24",
-                image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800"
-              },
-              {
-                name: "Osso Buco",
-                desc: "Braised veal shanks cooked with vegetables, white wine and broth.",
-                price: "$32",
-                image: "https://images.unsplash.com/photo-1544510808-91bcbee1df55?auto=format&fit=crop&q=80&w=800"
-              },
-              {
-                name: "Tiramisu Classico",
-                desc: "Traditional coffee-flavoured Italian dessert.",
-                price: "$12",
-                image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800"
-              }
-            ].map((item, i) => (
+            {featuredItems.map((item, i) => (
               <motion.div 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}

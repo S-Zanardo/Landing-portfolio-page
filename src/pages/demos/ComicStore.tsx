@@ -1,23 +1,72 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Search, Menu, Zap, Star, X, Loader2, Heart, Skull, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
-import { comics } from '../../data/comics';
 import comicSpeechBubble from '../../context/comic-bubble.png';
 import { useComicCart } from '../../context/ComicCartContext';
+import { useCatalog } from './useCatalog';
+
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNByb9NJb5wmvrS4aylrokNm0E3Hz18UFh39rzEs2uiO_lYXMrXfyjRrS-0PCSbujivMLtxgnFJ-63/pub?output=csv";
 
 export default function ComicStore() {
   const [email, setEmail] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [isError, setIsError] = useState(false);
-  const { cartCount } = useComicCart();
+  const { cartCount, addToCart } = useComicCart();
+  const { items: comics, isLoading, error } = useCatalog(GOOGLE_SHEETS_CSV_URL);
 
   // Catalog Modal State
   const [showCatalogModal, setShowCatalogModal] = useState(false);
   const [catalogForm, setCatalogForm] = useState({ name: '', email: '', address: '' });
   const [isSubmittingCatalog, setIsSubmittingCatalog] = useState(false);
   const [catalogSuccess, setCatalogSuccess] = useState(false);
+
+  // Configurator State
+  const [keychainColor, setKeychainColor] = useState('#FF0055');
+  const [keychainSymbol, setKeychainSymbol] = useState('zap');
+  const [keychainText, setKeychainText] = useState('HERO');
+
+  const generateKeychainSvg = (color: string, symbol: string, text: string) => {
+    let symbolSvg = '';
+    if (symbol === 'zap') symbolSvg = '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />';
+    else if (symbol === 'star') symbolSvg = '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="black" />';
+    else if (symbol === 'heart') symbolSvg = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" fill="black" />';
+    else if (symbol === 'skull') symbolSvg = '<circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M16 20a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20"/>';
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+        <rect width="200" height="300" fill="#1f2937" />
+        <g transform="translate(100, 150)">
+          <!-- Keychain Ring -->
+          <rect x="-12" y="-85" width="24" height="40" rx="12" fill="none" stroke="#9ca3af" stroke-width="6" />
+          <!-- Drop Shadow -->
+          <circle cx="5" cy="5" r="60" fill="black" />
+          <!-- Keychain Body -->
+          <circle cx="0" cy="0" r="60" fill="${color}" stroke="black" stroke-width="6" />
+          <!-- Symbol -->
+          <g transform="translate(-16, -30) scale(1.33)" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            ${symbolSvg}
+          </g>
+          <!-- Text -->
+          <text x="0" y="25" font-family="Impact, Arial Black, sans-serif" font-weight="900" font-size="18" fill="black" text-anchor="middle" letter-spacing="1">
+            ${(text || 'HERO').toUpperCase()}
+          </text>
+        </g>
+      </svg>
+    `;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  };
+
+  const handleAddCustomKeychain = () => {
+    addToCart({
+      id: `custom-keychain-${Date.now()}`,
+      title: `Custom ${keychainText || 'Hero'} Keychain`,
+      price: "$12.99",
+      image: generateKeychainSvg(keychainColor, keychainSymbol, keychainText)
+    }, 1);
+    alert('Custom Keychain added to cart! 💥');
+  };
 
   const handleCatalogSubmit = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
@@ -92,6 +141,22 @@ export default function ComicStore() {
       setShowModal(true);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FFE600] font-comic text-3xl">
+        <Loader2 className="w-10 h-10 animate-spin mr-4" /> Loading comics...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FF0055] font-comic text-xl">
+        Error loading catalog: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white font-sans overflow-x-hidden">
@@ -173,8 +238,8 @@ export default function ComicStore() {
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            src={comicSpeechBubble} // Usa l'immagine importata
-            className="absolute right-0 top-20 w-[600px] block drop-shadow-2xl rotate-12 opacity-50" // Ho lasciato block di default, puoi aggiustare le classi se vuoi nasconderla su schermi piccoli
+            src={comicSpeechBubble}
+            className="absolute right-0 top-20 w-[600px] hidden lg:block drop-shadow-2xl rotate-12 opacity-50"
             alt="Comic Effect"
           />
         </div>
@@ -190,7 +255,7 @@ export default function ComicStore() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {comics.map((item, i) => (
-              <Link to={`/demo/comic-store/product/${item.id}`} key={item.id}>
+              <Link to={`/demo/comic-store/product/${item.id || i}`} key={item.id || `store-${i}`}>
                 <motion.div
                   whileHover={{ y: -10 }}
                   className="group cursor-pointer"
@@ -219,6 +284,96 @@ export default function ComicStore() {
                 </motion.div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Custom Keychain Configurator */}
+      <section className="py-20 px-6 bg-[#111] border-y-8 border-black shadow-[inset_0_10px_30px_rgba(0,0,0,0.5)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 mb-12">
+            <Wrench className="w-10 h-10 text-[#FFE600]" />
+            <h2 className="font-comic text-5xl text-white">Build Your Gear</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Preview Area */}
+            <div className="bg-[#1a1a1a] p-8 flex flex-col items-center justify-center min-h-[450px] border-4 border-gray-800 rounded-3xl relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+              <div className="absolute top-4 left-4 bg-black text-[#FFE600] font-bold px-3 py-1 text-sm uppercase tracking-wider">Preview</div>
+              
+              <motion.div 
+                className="relative w-48 h-48 rounded-full border-8 border-black flex flex-col items-center justify-center shadow-[10px_10px_0px_rgba(0,0,0,1)]"
+                style={{ backgroundColor: keychainColor }}
+                animate={{ backgroundColor: keychainColor }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Keychain Ring */}
+                <div className="absolute -top-12 w-10 h-16 border-8 border-gray-400 rounded-full bg-transparent z-[-1]" />
+                
+                {keychainSymbol === 'zap' && <Zap className="w-16 h-16 text-black mb-2" />}
+                {keychainSymbol === 'star' && <Star className="w-16 h-16 text-black fill-current mb-2" />}
+                {keychainSymbol === 'heart' && <Heart className="w-16 h-16 text-black fill-current mb-2" />}
+                {keychainSymbol === 'skull' && <Skull className="w-16 h-16 text-black mb-2" />}
+                
+                <span className="font-comic text-black font-black uppercase tracking-widest px-4 text-center truncate w-full text-xl text-shadow-sm">
+                  {keychainText || 'YOUR TEXT'}
+                </span>
+              </motion.div>
+            </div>
+
+            {/* Controls Area */}
+            <div className="space-y-8 bg-gray-900 p-8 border-4 border-black shadow-[8px_8px_0px_0px_#FFE600]">
+              <div>
+                <h3 className="font-comic text-2xl mb-4 text-[#FFE600] uppercase tracking-wide">1. Choose Color</h3>
+                <div className="flex gap-4">
+                  {['#FF0055', '#FFE600', '#00A2FF', '#00FF66', '#FFFFFF'].map(c => (
+                    <button 
+                      key={c}
+                      onClick={() => setKeychainColor(c)}
+                      className={`w-12 h-12 rounded-full border-4 ${keychainColor === c ? 'border-white scale-110' : 'border-black'} transition-all hover:scale-105`}
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-comic text-2xl mb-4 text-[#FFE600] uppercase tracking-wide">2. Pick a Symbol</h3>
+                <div className="flex gap-4">
+                  {['zap', 'star', 'heart', 'skull'].map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setKeychainSymbol(s)}
+                      className={`w-14 h-14 bg-gray-800 rounded-xl border-4 flex items-center justify-center ${keychainSymbol === s ? 'border-white text-white' : 'border-black text-gray-500'} hover:border-white hover:text-white transition-colors`}
+                    >
+                      {s === 'zap' && <Zap className="w-7 h-7" />}
+                      {s === 'star' && <Star className="w-7 h-7 fill-current" />}
+                      {s === 'heart' && <Heart className="w-7 h-7 fill-current" />}
+                      {s === 'skull' && <Skull className="w-7 h-7" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-comic text-2xl mb-4 text-[#FFE600] uppercase tracking-wide">3. Add Your Alias</h3>
+                <input
+                  type="text"
+                  maxLength={10}
+                  value={keychainText}
+                  onChange={(e) => setKeychainText(e.target.value.toUpperCase())}
+                  placeholder="MAX 10 CHARACTERS"
+                  className="w-full bg-white text-black font-black uppercase text-xl px-6 py-4 border-4 border-black focus:outline-none focus:border-[#FF0055]"
+                />
+              </div>
+              <div className="pt-4">
+                <button 
+                  onClick={handleAddCustomKeychain}
+                  className="w-full bg-[#FF0055] text-white font-black uppercase text-2xl py-5 hover:bg-white hover:text-black transition-colors border-4 border-black shadow-[6px_6px_0px_0px_#FFE600] flex items-center justify-center gap-3"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  Add to Cart - $12.99
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>

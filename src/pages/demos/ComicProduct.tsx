@@ -1,19 +1,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ShoppingCart, Star, Share2, Heart, X, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Star, Share2, Heart, X, Minus, Plus, Loader2 } from 'lucide-react';
 import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
-import { comics } from '../../data/comics';
 import { useComicCart } from '../../context/ComicCartContext';
 import { useState } from 'react';
+import { useCatalog } from './useCatalog';
+
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNByb9NJb5wmvrS4aylrokNm0E3Hz18UFh39rzEs2uiO_lYXMrXfyjRrS-0PCSbujivMLtxgnFJ-63/pub?output=csv";
 
 export default function ComicProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = comics.find(c => c.id === id);
   const { addToCart, cartCount } = useComicCart();
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const { items: comics, isLoading, error } = useCatalog(GOOGLE_SHEETS_CSV_URL);
 
-  if (!product) {
+  const product = comics.find(c => String(c.id) === String(id));
+
+  if (!isLoading && !error && !product) {
     return <Navigate to="/demo/comic-store" replace />;
   }
 
@@ -22,6 +26,8 @@ export default function ComicProduct() {
   };
 
   const handleContinueShopping = () => {
+    if (!product) return;
+    
     addToCart({
       id: product.id,
       title: product.title,
@@ -33,6 +39,8 @@ export default function ComicProduct() {
   };
 
   const handleViewCart = () => {
+    if (!product) return;
+    
     addToCart({
       id: product.id,
       title: product.title,
@@ -45,6 +53,22 @@ export default function ComicProduct() {
 
   const incrementQuantity = () => setQuantity(q => q + 1);
   const decrementQuantity = () => setQuantity(q => Math.max(1, q - 1));
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FFE600] font-comic text-3xl">
+        <Loader2 className="w-10 h-10 animate-spin mr-4" /> Loading comic...
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center text-[#FF0055] font-comic text-xl">
+        Error loading comic details.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white font-sans overflow-x-hidden">
