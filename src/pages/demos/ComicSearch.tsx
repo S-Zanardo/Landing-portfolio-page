@@ -90,7 +90,7 @@ export default function ComicSearch() {
                 whileHover={{ y: -10 }}
                 className="group cursor-pointer"
               >
-                <div className="relative aspect-[2/3] mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
+                <div className="relative aspect-2/3 mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
                   <img 
                     src={item.image} 
                     alt={item.title}

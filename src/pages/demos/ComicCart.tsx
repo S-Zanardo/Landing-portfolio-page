@@ -135,7 +135,7 @@ export default function ComicCart() {
                 exit={{ opacity: 0, x: -100 }}
                 className="bg-gray-800 p-4 flex gap-6 items-center border-2 border-transparent hover:border-[#FFE600] transition-colors"
               >
-                <div className="w-24 aspect-[2/3] flex-shrink-0">
+                <div className="w-24 aspect-2/3 shrink-0">
                   <img 
                     src={item.image} 
                     alt={item.title} 
@@ -187,7 +187,7 @@ export default function ComicCart() {
       {/* Upsell Modal */}
       <AnimatePresence>
         {showUpsellModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -237,7 +237,7 @@ export default function ComicCart() {
       {/* Checkout Form Modal */}
       <AnimatePresence>
         {showCheckoutFormModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

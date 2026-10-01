@@ -47,7 +47,9 @@ export function ComicCartProvider({ children }: { children: ReactNode }) {
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const cartTotal = items.reduce((sum, item) => {
-    const price = parseFloat(item.price.replace('$', ''));
+    console.log(typeof item.price, item.price);
+    const priceString = String(item.price || '0');
+    const price = parseFloat(priceString.replace('$', ''));
     return sum + price * item.quantity;
   }, 0);
 

@@ -33,7 +33,7 @@ function GalleryItem({ item, index }: { item: { src: string, description: string
       onPointerUp={handlePointerUpOrLeave}
       onPointerLeave={handlePointerUpOrLeave}
       onPointerCancel={handlePointerUpOrLeave}
-      className="aspect-[3/4] bg-gray-100 relative group overflow-hidden cursor-pointer"
+      className="aspect-3/4 bg-gray-100 relative group overflow-hidden cursor-pointer"
     >
       <motion.div 
         className="absolute top-0 h-full"
@@ -244,7 +244,7 @@ export default function Photographer() {
     <div className="min-h-screen bg-white text-black font-sans">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-sm">
-        <div className="max-w-[1800px] mx-auto px-6 h-24 flex items-center justify-between">
+        <div className="max-w-450 mx-auto px-6 h-24 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-xs font-medium tracking-widest uppercase hover:opacity-50 transition-opacity z-50">
             <ArrowLeft className="w-3 h-3" /> Portfolio
           </Link>
@@ -288,7 +288,7 @@ export default function Photographer() {
       {activeTab === 'work' ? (
         <>
           {/* Hero */}
-          <div className="pt-40 pb-20 px-6 max-w-[1800px] mx-auto">
+          <div className="pt-40 pb-20 px-6 max-w-450 mx-auto">
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -301,7 +301,7 @@ export default function Photographer() {
           </div>
 
           {/* Gallery */}
-          <div className="px-6 pb-20 max-w-[1800px] mx-auto">
+          <div className="px-6 pb-20 max-w-450 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {portfolioItems.map((item, i) => (
                 <GalleryItem key={i} item={item} index={i} />
@@ -415,7 +415,7 @@ export default function Photographer() {
 
       {/* Footer / About Section */}
       <footer id="about-section" className="py-20 px-6 border-t border-gray-100">
-        <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+        <div className="max-w-450 mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
           <div className="w-full md:w-1/2">
             <h3 className="text-2xl font-light mb-6">About</h3>
             <div className="mb-8">
@@ -455,7 +455,7 @@ export default function Photographer() {
       {/* Polaroid Contact Modal */}
       <AnimatePresence>
         {showPolaroidContactModal && currentPolaroidImage && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -469,7 +469,7 @@ export default function Photographer() {
               exit={{ opacity: 0, y: '100vh', rotate: '-15deg', scale: 0.5 }}
               transition={{ type: "spring", stiffness: 100, damping: 20, duration: 0.6 }}
               onClick={handlePolaroidClick}
-              className="relative bg-white w-full max-w-sm aspect-[5/6] p-4 shadow-xl flex flex-col items-center justify-center cursor-pointer border border-gray-100"
+              className="relative bg-white w-full max-w-sm aspect-5/6 p-4 shadow-xl flex flex-col items-center justify-center cursor-pointer border border-gray-100"
               style={{ filter: 'drop-shadow(0 25px 25px rgba(0,0,0,0.4))' }} // Extra shadow for depth
             >
               <button 

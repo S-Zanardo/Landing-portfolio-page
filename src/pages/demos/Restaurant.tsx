@@ -188,7 +188,7 @@ export default function Restaurant() {
       {/* Reservation Modal */}
       <AnimatePresence>
         {isReservationOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -268,7 +268,7 @@ export default function Restaurant() {
                             <button
                               key={i}
                               onClick={() => setSelectedDate(date)}
-                              className={`flex-shrink-0 w-20 p-3 rounded-2xl border transition-all flex flex-col items-center gap-1 ${
+                              className={`shrink-0 w-20 p-3 rounded-2xl border transition-all flex flex-col items-center gap-1 ${
                                 isSelected
                                   ? 'border-[#D94E1F] bg-[#D94E1F]/5 ring-2 ring-[#D94E1F]/20'
                                   : 'border-gray-200 hover:border-[#D94E1F]/50'
@@ -435,7 +435,7 @@ export default function Restaurant() {
                 viewport={{ once: true }}
                 className="flex flex-col md:flex-row gap-8 items-center group cursor-pointer"
               >
-                <div className="w-full md:w-1/3 aspect-[4/3] overflow-hidden rounded-2xl">
+                <div className="w-full md:w-1/3 aspect-4/3 overflow-hidden rounded-2xl">
                   <img 
                     src={item.image} 
                     alt={item.name}

@@ -20,8 +20,8 @@ export default function Home() {
     <div className="min-h-screen bg-[#08090A] text-[#F2F2F3] font-sans selection:bg-[#5E6AD2] selection:text-white overflow-x-hidden">
       
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#08090A]/80 backdrop-blur-xl border-b border-white/[0.08]">
-        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-[#08090A]/80 backdrop-blur-xl border-b border-white/8">
+        <div className="max-w-300 mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 group cursor-pointer">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
               <Code2 className="w-4 h-4 text-white" />
@@ -62,16 +62,16 @@ export default function Home() {
             alt="Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-[#08090A]" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/80 via-black/60 to-[#08090A]" />
         </div>
 
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6 text-center pt-20">
+        <div className="relative z-10 max-w-300 mx-auto px-6 text-center pt-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-medium tracking-[-0.02em] leading-[1.1] mb-8 pb-4 bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl">
+            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-medium tracking-[-0.02em] leading-[1.1] mb-8 pb-4 bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent drop-shadow-2xl">
               {t('heroTitle')}
             </h1>
             
@@ -96,7 +96,7 @@ export default function Home() {
 
       {/* Bento Grid Demos */}
       <section id="demos" className="py-32 px-6">
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-300 mx-auto">
           <div className="mb-20">
             <h2 className="text-3xl md:text-5xl font-medium tracking-tight mb-6">{t('madeFor')}</h2>
             <p className="text-xl text-[#8A8F98] max-w-2xl">
@@ -106,8 +106,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1: Restaurant */}
-            <Link to="/demo/restaurant" className="group relative h-[480px] rounded-3xl bg-[#0F1115] border border-white/[0.08] overflow-hidden hover:border-white/[0.15] transition-all">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10" />
+            <Link to="/demo/restaurant" className="group relative h-120 rounded-3xl bg-[#0F1115] border border-white/8 overflow-hidden hover:border-white/15 transition-all">
+              <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80 z-10" />
               <img 
                 src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=1000" 
                 alt="Restaurant"
@@ -128,8 +128,8 @@ export default function Home() {
             </Link>
 
             {/* Card 2: Photographer */}
-            <Link to="/demo/photographer" className="group relative h-[480px] rounded-3xl bg-[#0F1115] border border-white/[0.08] overflow-hidden hover:border-white/[0.15] transition-all">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10" />
+            <Link to="/demo/photographer" className="group relative h-120 rounded-3xl bg-[#0F1115] border border-white/8 overflow-hidden hover:border-white/15 transition-all">
+              <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80 z-10" />
               <img 
                 src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&q=80&w=1000" 
                 alt="Photographer"
@@ -150,8 +150,8 @@ export default function Home() {
             </Link>
 
             {/* Card 3: Comic Store */}
-            <Link to="/demo/comic-store" className="group relative h-[480px] rounded-3xl bg-[#0F1115] border border-white/[0.08] overflow-hidden hover:border-white/[0.15] transition-all">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10" />
+            <Link to="/demo/comic-store" className="group relative h-120 rounded-3xl bg-[#0F1115] border border-white/8 overflow-hidden hover:border-white/15 transition-all">
+              <div className="absolute inset-0 bg-linear-to-b from-transparent to-black/80 z-10" />
               <img 
                 src="https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?auto=format&fit=crop&q=80&w=1000" 
                 alt="Comic Store"
@@ -177,8 +177,8 @@ export default function Home() {
 
 
       {/* Grid Features */}
-      <section className="py-32 px-6 border-t border-white/[0.05]">
-        <div className="max-w-[1200px] mx-auto">
+      <section className="py-32 px-6 border-t border-white/5">
+        <div className="max-w-300 mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -197,8 +197,8 @@ export default function Home() {
                 desc: t('perfOptDesc')
               }
             ].map((feature, i) => (
-              <div key={i} className="p-8 rounded-3xl bg-[#0F1115] border border-white/[0.08] hover:bg-white/[0.02] transition-colors group">
-                <div className="w-12 h-12 rounded-xl bg-white/[0.05] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <div key={i} className="p-8 rounded-3xl bg-[#0F1115] border border-white/8 hover:bg-white/2 transition-colors group">
+                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-medium mb-3">{feature.title}</h3>
@@ -210,8 +210,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-20 px-6 border-t border-white/[0.05] bg-[#050505]">
-        <div className="max-w-[1200px] mx-auto">
+      <footer className="py-20 px-6 border-t border-white/5 bg-[#050505]">
+        <div className="max-w-300 mx-auto">
           <div className="grid md:grid-cols-6 gap-12 mb-20">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
@@ -268,7 +268,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/[0.05] gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/5 gap-4">
             <p className="text-xs text-[#8A8F98]">© {new Date().getFullYear()} Zanardo DEV. {t('rightsReserved')}</p>
             <div className="flex gap-6">
               <a href="https://github.com/S-Zanardo" target="_blank" rel="noopener noreferrer">

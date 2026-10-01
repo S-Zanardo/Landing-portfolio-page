@@ -103,14 +103,14 @@ export default function ComicProduct() {
             animate={{ opacity: 1, x: 0 }}
             className="relative"
           >
-            <div className="aspect-[2/3] bg-gray-800 border-8 border-white rotate-2 shadow-[8px_8px_0px_0px_#FFE600]">
+            <div className="aspect-2/3 bg-gray-800 border-8 border-white rotate-2 shadow-[8px_8px_0px_0px_#FFE600]">
               <img 
                 src={product.image} 
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -top-6 -left-6 bg-[#FF0055] text-white w-24 h-24 rounded-full flex items-center justify-center font-black text-xl rotate-[-12deg] shadow-lg animate-bounce">
+            <div className="absolute -top-6 -left-6 bg-[#FF0055] text-white w-24 h-24 rounded-full flex items-center justify-center font-black text-xl -rotate-12 shadow-lg animate-bounce">
               HOT!
             </div>
           </motion.div>
@@ -191,7 +191,7 @@ export default function ComicProduct() {
       {/* Add to Cart Modal */}
       <AnimatePresence>
         {showAddToCartModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

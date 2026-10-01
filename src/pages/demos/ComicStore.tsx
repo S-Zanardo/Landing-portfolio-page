@@ -199,9 +199,9 @@ export default function ComicStore() {
       </nav>
 
       {/* Hero */}
-      <section className="relative h-[600px] bg-[#2a2a2a] overflow-hidden">
+      <section className="relative h-150 bg-[#2a2a2a] overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/comic-dots.png')] opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-transparent to-[#1a1a1a]" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#1a1a1a] via-transparent to-[#1a1a1a]" />
         
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center relative z-10">
           <div className="max-w-2xl">
@@ -222,14 +222,14 @@ export default function ComicStore() {
             <div className="flex flex-wrap gap-4">
               <Link to="/demo/comic-store/search">
                 <button className="bg-[#FFE600] text-black font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                  <span className="block skew-x-[10deg]">Shop Now</span>
+                  <span className="block skew-x-10">Shop Now</span>
                 </button>
               </Link>
               <button 
                 onClick={() => setShowCatalogModal(true)}
                 className="bg-[#FF0055] text-white font-black uppercase text-xl px-10 py-4 skew-x-[-10deg] hover:bg-white hover:text-[#FF0055] hover:scale-105 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
               >
-                <span className="block skew-x-[10deg]">Free Catalog</span>
+                <span className="block skew-x-10">Free Catalog</span>
               </button>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function ComicStore() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
             src={comicSpeechBubble}
-            className="absolute right-0 top-20 w-[600px] hidden lg:block drop-shadow-2xl rotate-12 opacity-50"
+            className="absolute right-0 top-20 w-150 hidden lg:block drop-shadow-2xl rotate-12 opacity-50"
             alt="Comic Effect"
           />
         </div>
@@ -260,7 +260,7 @@ export default function ComicStore() {
                   whileHover={{ y: -10 }}
                   className="group cursor-pointer"
                 >
-                  <div className="relative aspect-[2/3] mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
+                  <div className="relative aspect-2/3 mb-4 overflow-hidden border-4 border-transparent group-hover:border-[#FFE600] transition-colors bg-gray-800">
                     <img 
                       src={item.image} 
                       alt={item.title}
@@ -298,7 +298,7 @@ export default function ComicStore() {
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Preview Area */}
-            <div className="bg-[#1a1a1a] p-8 flex flex-col items-center justify-center min-h-[450px] border-4 border-gray-800 rounded-3xl relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+            <div className="bg-[#1a1a1a] p-8 flex flex-col items-center justify-center min-h-112.5 border-4 border-gray-800 rounded-3xl relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
               <div className="absolute top-4 left-4 bg-black text-[#FFE600] font-bold px-3 py-1 text-sm uppercase tracking-wider">Preview</div>
               
               <motion.div 
@@ -413,7 +413,7 @@ export default function ComicStore() {
       {/* Subscription Modal */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -455,7 +455,7 @@ export default function ComicStore() {
       {/* Catalog Request Modal */}
       <AnimatePresence>
         {showCatalogModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
