@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Code2, Camera, Utensils, ShoppingBag, ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { ComicCartProvider } from './context/ComicCartContext';
+import { Analytics } from '@vercel/analytics/react';
 
 // Pages
 import Home from './pages/Home';
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/demo/comic-store/cart" element={<ComicCart />} />
             <Route path="/demo/comic-store/search" element={<ComicSearch />} />
           </Routes>
+          <Analytics />
         </ComicCartProvider>
       </LanguageProvider>
     </Router>
