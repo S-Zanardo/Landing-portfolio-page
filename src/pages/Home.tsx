@@ -118,9 +118,14 @@ export default function Home() {
                   <Utensils className="w-5 h-5 text-orange-400" />
                 </div>
                 <h3 className="text-xl font-medium mb-2">{t('restaurantTitle')}</h3>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">{t('restaurantSubtitle')}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                <div className="flex items-end justify-between mt-4">
+                  <div>
+                    <span className="text-sm text-white/60 block">{t('restaurantSubtitle')}</span>
+                    <span className="text-[13px] font-medium text-orange-300/90 mt-1 block">
+                      {t('restaurantPrice')}
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors shrink-0">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
@@ -140,9 +145,14 @@ export default function Home() {
                   <Camera className="w-5 h-5 text-blue-400" />
                 </div>
                 <h3 className="text-xl font-medium mb-2">{t('photographerTitle')}</h3>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">{t('photographerSubtitle')}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                <div className="flex items-end justify-between mt-4">
+                  <div>
+                    <span className="text-sm text-white/60 block">{t('photographerSubtitle')}</span>
+                    <span className="text-[13px] font-medium text-blue-300/90 mt-1 block">
+                      {t('photographerPrice')}
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors shrink-0">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
@@ -162,9 +172,14 @@ export default function Home() {
                   <ShoppingBag className="w-5 h-5 text-yellow-400" />
                 </div>
                 <h3 className="text-xl font-medium mb-2">{t('comicStoreTitle')}</h3>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm text-white/60">{t('comicStoreSubtitle')}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                <div className="flex items-end justify-between mt-4">
+                  <div>
+                    <span className="text-sm text-white/60 block">{t('comicStoreSubtitle')}</span>
+                    <span className="text-[13px] font-medium text-yellow-300/90 mt-1 block">
+                      {t('comicStorePrice')}
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors shrink-0">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
